@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:visitor_application/form.dart';
 import 'package:visitor_application/navbar.dart';
+import 'package:visitor_application/registeredForm.dart';
 
 void main() {
   runApp(MyApp());
@@ -109,9 +110,14 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class SecondRoute extends StatelessWidget {
+class SecondRoute extends StatefulWidget {
   const SecondRoute({super.key});
 
+  @override
+  State<SecondRoute> createState() => _SecondRouteState();
+}
+
+class _SecondRouteState extends State<SecondRoute> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -148,46 +154,164 @@ class SecondRoute extends StatelessWidget {
             ),
           ),
         ),
-        body: Center(
-          child: Column(children: [
-            SizedBox(
-              height: 20,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                SizedBox(
-                  width: 8,
-                ),
-                GestureDetector(
-                  onTap: () => {},
-                  child: Text(
-                    'New Visitor',
-                    style: TextStyle(
-                        fontSize: 17,
-                        color: Color(0xFFFE4C2D),
-                        fontFamily: 'Roboto',
-                        fontWeight: FontWeight.w500),
+        body: SingleChildScrollView(
+          child: Center(
+            child: Column(children: [
+              SizedBox(
+                height: 20,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  SizedBox(
+                    width: 8,
                   ),
-                ),
-                Text(
-                  'Registered Visitor',
-                  style: TextStyle(
-                      fontSize: 17,
-                      color: Color(0xFF8E8E8E),
-                      fontFamily: 'Roboto',
-                      fontWeight: FontWeight.w500),
-                ),
-                SizedBox(
-                  width: 8,
+                  GestureDetector(
+                    onTap: () => {},
+                    child: Text(
+                      'New Visitor',
+                      style: TextStyle(
+                          fontSize: 17,
+                          color: Color(0xFFFE4C2D),
+                          fontFamily: 'Roboto',
+                          fontWeight: FontWeight.w500),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () => {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const ThirdRoute()),
+                      )
+                    },
+                    child: Text(
+                      'Registered Visitor',
+                      style: TextStyle(
+                          fontSize: 17,
+                          color: Color(0xFF8E8E8E),
+                          fontFamily: 'Roboto',
+                          fontWeight: FontWeight.w500),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 8,
+                  ),
+                ],
+              ),
+              Divider(
+                color: Color(0xFFF39D23),
+              ),
+              MyCustomForm(),
+            ]),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class ThirdRoute extends StatefulWidget {
+  const ThirdRoute({super.key});
+
+  @override
+  State<ThirdRoute> createState() => _ThirdRouteState();
+}
+
+class _ThirdRouteState extends State<ThirdRoute> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+          gradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [Color(0xFFFFF6e5), Color(0xFFF39D23)],
+      )),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        drawer: Navbar(),
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(100),
+          child: AppBar(
+            toolbarHeight: 100,
+            backgroundColor: Colors.transparent,
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // SizedBox(
+                //   height: 50,
+                // ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
+                  child: Image.asset(
+                    'assets/logo.png',
+                    fit: BoxFit.cover,
+                    // height: 500,
+                    width: 180,
+                  ),
                 ),
               ],
             ),
-            Divider(
-              color: Color(0xFFF39D23),
-            ),
-            MyCustomForm(),
-          ]),
+          ),
+        ),
+        body: SingleChildScrollView(
+          child: Center(
+            child: Column(children: [
+              SizedBox(
+                height: 20,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  SizedBox(
+                    width: 8,
+                  ),
+                  GestureDetector(
+                    onTap: () => {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const SecondRoute()),
+                      )
+                    },
+                    child: Text(
+                      'New Visitor',
+                      style: TextStyle(
+                          fontSize: 17,
+                          color: Color(0xFF8E8E8E),
+                          fontFamily: 'Roboto',
+                          fontWeight: FontWeight.w500),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () => {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const RegisteredForm()),
+                      )
+                    },
+                    child: Text(
+                      'Registered Visitor',
+                      style: TextStyle(
+                          fontSize: 17,
+                          color: Color(0xFFFE4C2D),
+                          fontFamily: 'Roboto',
+                          fontWeight: FontWeight.w500),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 8,
+                  ),
+                ],
+              ),
+              Divider(
+                color: Color(0xFFF39D23),
+              ),
+              RegisteredForm(),
+            ]),
+          ),
         ),
       ),
     );

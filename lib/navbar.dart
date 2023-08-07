@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:visitor_application/hostVisitor.dart';
+import 'package:visitor_application/main.dart';
+import 'package:visitor_application/visitorListPage.dart';
 
 class Navbar extends StatelessWidget {
   @override
@@ -28,13 +31,21 @@ class Navbar extends StatelessWidget {
             children: [
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  'New Visitor',
-                  style: TextStyle(
-                    color: Color(0xFFFE4C2D),
-                    fontFamily: 'Roboto',
-                    fontWeight: FontWeight.w400,
-                    fontSize: 17,
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SecondRoute()),
+                    );
+                  },
+                  child: Text(
+                    'New Visitor',
+                    style: TextStyle(
+                      color: Color(0xFFFE4C2D),
+                      fontFamily: 'Roboto',
+                      fontWeight: FontWeight.w400,
+                      fontSize: 17,
+                    ),
                   ),
                 ),
               ),
@@ -43,13 +54,21 @@ class Navbar extends StatelessWidget {
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  'Host Visitor',
-                  style: TextStyle(
-                    color: Color(0xFFFE4C2D),
-                    fontFamily: 'Roboto',
-                    fontWeight: FontWeight.w400,
-                    fontSize: 17,
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => HostVisitor()),
+                    );
+                  },
+                  child: Text(
+                    'Host Visitor',
+                    style: TextStyle(
+                      color: Color(0xFFFE4C2D),
+                      fontFamily: 'Roboto',
+                      fontWeight: FontWeight.w400,
+                      fontSize: 17,
+                    ),
                   ),
                 ),
               ),
@@ -73,13 +92,22 @@ class Navbar extends StatelessWidget {
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  'Visitor List',
-                  style: TextStyle(
-                    color: Color(0xFFFE4C2D),
-                    fontFamily: 'Roboto',
-                    fontWeight: FontWeight.w400,
-                    fontSize: 17,
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => VisitorsListPage()),
+                    );
+                  },
+                  child: Text(
+                    'Visitor List',
+                    style: TextStyle(
+                      color: Color(0xFFFE4C2D),
+                      fontFamily: 'Roboto',
+                      fontWeight: FontWeight.w400,
+                      fontSize: 17,
+                    ),
                   ),
                 ),
               ),

@@ -1,49 +1,24 @@
-import 'dart:io';
+
 import 'package:intl/intl.dart';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:visitor_application/display_list.dart';
-import 'package:visitor_application/visitorListPage.dart';
-import 'package:visitor_application/visitors_list.dart';
 
-import 'uploadImage.dart';
-import 'visitor.dart';
 
-class MyCustomForm extends StatefulWidget {
-  const MyCustomForm({super.key});
+
+class HostVisitorForm extends StatefulWidget {
+  const HostVisitorForm({super.key});
 
   @override
-  MyCustomFormState createState() {
-    return MyCustomFormState();
+  HostVisitorFormState createState() {
+    return HostVisitorFormState();
   }
 }
 
-class MyCustomFormState extends State<MyCustomForm> {
-  File? image;
+class HostVisitorFormState extends State<HostVisitorForm> {
   final _formKey = GlobalKey<FormState>();
-  TextEditingController _nameController = TextEditingController();
-  TextEditingController _contactNumberController = TextEditingController();
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _purposeOfVisitController = TextEditingController();
-  TextEditingController _whomToMeetController = TextEditingController();
-  TextEditingController _OrganizationController = TextEditingController();
 
   TextEditingController dateInput = TextEditingController();
   TextEditingController timeinput = TextEditingController();
-  Future pickImage(ImageSource source) async {
-    try {
-      final image = await ImagePicker().pickImage(source: source);
-      if (image == null) return;
-
-      final imageTemporary = File(image.path);
-      setState(() => this.image = imageTemporary);
-    } on PlatformException catch (e) {
-      print('Failed to pick image: $e');
-    }
-    return image;
-  }
 
   @override
   void initState() {
@@ -73,7 +48,6 @@ class MyCustomFormState extends State<MyCustomForm> {
               ),
             ),
             TextFormField(
-              controller: _nameController,
               keyboardType: TextInputType.name,
               style: TextStyle(
                   fontFamily: 'Roboto',
@@ -95,7 +69,7 @@ class MyCustomFormState extends State<MyCustomForm> {
                   )),
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter visito\'s name';
+                  return 'Please enter some text';
                 }
                 return null;
               },
@@ -111,7 +85,6 @@ class MyCustomFormState extends State<MyCustomForm> {
               ),
             ),
             TextFormField(
-              controller: _OrganizationController,
               keyboardType: TextInputType.text,
               style: TextStyle(
                   fontFamily: 'Roboto',
@@ -133,7 +106,7 @@ class MyCustomFormState extends State<MyCustomForm> {
                   )),
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter organization\'s name';
+                  return 'Please enter some text';
                 }
                 return null;
               },
@@ -149,7 +122,6 @@ class MyCustomFormState extends State<MyCustomForm> {
               ),
             ),
             TextFormField(
-              controller: _whomToMeetController,
               keyboardType: TextInputType.name,
               style: TextStyle(
                   fontFamily: 'Roboto',
@@ -171,7 +143,7 @@ class MyCustomFormState extends State<MyCustomForm> {
                   )),
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter whom you want to meet?';
+                  return 'Please enter some text';
                 }
                 return null;
               },
@@ -187,7 +159,6 @@ class MyCustomFormState extends State<MyCustomForm> {
               ),
             ),
             TextFormField(
-              controller: _emailController,
               keyboardType: TextInputType.emailAddress,
               style: TextStyle(
                   fontFamily: 'Roboto',
@@ -209,7 +180,7 @@ class MyCustomFormState extends State<MyCustomForm> {
                   )),
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter visitor\'s email';
+                  return 'Please enter some text';
                 }
                 return null;
               },
@@ -225,7 +196,6 @@ class MyCustomFormState extends State<MyCustomForm> {
               ),
             ),
             TextFormField(
-              controller: _contactNumberController,
               keyboardType: TextInputType.phone,
               style: TextStyle(
                   fontFamily: 'Roboto',
@@ -247,7 +217,7 @@ class MyCustomFormState extends State<MyCustomForm> {
                   )),
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter visitor\'s contact number';
+                  return 'Please enter some text';
                 }
                 return null;
               },
@@ -263,7 +233,6 @@ class MyCustomFormState extends State<MyCustomForm> {
               ),
             ),
             TextFormField(
-              controller: _purposeOfVisitController,
               keyboardType: TextInputType.text,
               style: TextStyle(
                   fontFamily: 'Roboto',
@@ -289,46 +258,6 @@ class MyCustomFormState extends State<MyCustomForm> {
                 }
                 return null;
               },
-            ),
-            Row(
-              children: [
-                Expanded(
-                  flex: 1,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 17, 0, 0),
-                    child: SizedBox(
-                      height: 40,
-                      child: ElevatedButton.icon(
-                          onPressed: () {
-                            pickImage(ImageSource.camera);
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => UploadImage()),
-                            );
-                          },
-                          icon: Icon(
-                            Icons.add_a_photo_outlined,
-                            color: Color(0xFFF39D23),
-                          ),
-                          label: Text(
-                            'Take a picture',
-                            style: TextStyle(
-                                color: Color(0xFFF39D23),
-                                fontFamily: 'Roboto',
-                                fontWeight: FontWeight.w500),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            side: BorderSide(
-                                width: 1.0, color: Color(0xFFFF5C00)),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10)),
-                          )),
-                    ),
-                  ),
-                ),
-              ],
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 17, 0, 0),
@@ -500,15 +429,10 @@ class MyCustomFormState extends State<MyCustomForm> {
                       child: ElevatedButton(
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
-                            _saveVisitor();
-                            _nameController.clear();
-                            _contactNumberController.clear();
-                            _emailController.clear();
-                            _OrganizationController.clear();
-                            _purposeOfVisitController.clear();
-                            _whomToMeetController.clear();
-                            dateInput.clear();
-                            timeinput.clear();
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
+                              content: Text('Processing Data'),
+                            ));
                           }
                         },
                         style: ElevatedButton.styleFrom(
@@ -535,31 +459,5 @@ class MyCustomFormState extends State<MyCustomForm> {
         ),
       ),
     );
-  }
-
-  void _saveVisitor() {
-    String name = _nameController.text;
-    String contactNumber = _contactNumberController.text;
-    String organization = _OrganizationController.text;
-    String email = _emailController.text;
-    String whomToMeet = _whomToMeetController.text;
-    String dateSelected = dateInput.text;
-    String purposeOfVisit = _purposeOfVisitController.text;
-
-    Visitor newVisitor = Visitor(
-        name: name,
-        contactNumber: contactNumber,
-        email: email,
-        organization: organization,
-        whomToMeet: whomToMeet,
-        dateSelected: dateSelected,
-        purposeOfVisit: purposeOfVisit);
-
-    setState(() {
-      visitorsList.add(newVisitor);
-    });
-
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => VisitorsListPage()));
   }
 }
