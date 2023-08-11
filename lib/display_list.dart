@@ -31,7 +31,7 @@ class DisplayList extends StatelessWidget {
               children: [
                 Text(visitor.name),
                 Text(visitor.email),
-                Text(visitor.dateSelected)
+                Text(visitor.name)
               ],
             ),
           );

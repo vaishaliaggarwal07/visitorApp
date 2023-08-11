@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:visitor_application/display_list.dart';
+import 'package:visitor_application/visitorInfo.dart';
 import 'package:visitor_application/visitors_list.dart';
 
 import 'navbar.dart';
@@ -119,7 +120,14 @@ class _VisitorsListPageState extends State<VisitorsListPage> {
                 return Padding(
                   padding: const EdgeInsets.fromLTRB(8, 0, 8, 4),
                   child: TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => VisitorsInfo(
+                                    visitor: visitor,
+                                  )));
+                    },
                     style: ButtonStyle(
                       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                         RoundedRectangleBorder(
@@ -143,12 +151,59 @@ class _VisitorsListPageState extends State<VisitorsListPage> {
                         children: [
                           SizedBox(width: 50, child: Text(visitor.name)),
                           SizedBox(width: 200, child: Text(visitor.email)),
-                          SizedBox(
-                              width: 80, child: Text(visitor.dateSelected)),
+                          SizedBox(width: 80, child: Text(visitor.name)),
                           SizedBox(width: 50, child: Text('online')),
+
+                          // SizedBox(
+                          //   width: 20,
+                          //   child: Row(
+                          //     mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          //     children: [
+                          //       IconButton(
+                          //         icon: Icon(
+                          //           Icons.edit,
+                          //           size: 15.0,
+                          //           color: Color(0xFFFE4C2D),
+                          //         ),
+                          //         tooltip: 'Edit',
+                          //         onPressed: () {},
+                          //       ),
+                          //       IconButton(
+                          //         icon: Icon(
+                          //           Icons.delete,
+                          //           size: 15.0,
+                          //           color: Color(0xFFFE4C2D),
+                          //         ),
+                          //         tooltip: 'Delete',
+                          //         onPressed: () {},
+                          //       ),
+                          //     ],
+                          //   ),
+                          // )
                           SizedBox(
-                            width: 20,
-                          )
+                            width: 10,
+                            child: IconButton(
+                              icon: Icon(
+                                Icons.edit,
+                                size: 17.0,
+                                color: Color(0xFFFE4C2D),
+                              ),
+                              tooltip: 'Edit',
+                              onPressed: () {},
+                            ),
+                          ),
+                          SizedBox(
+                            width: 10,
+                            child: IconButton(
+                              icon: Icon(
+                                Icons.delete,
+                                size: 17.0,
+                                color: Color(0xFFFE4C2D),
+                              ),
+                              tooltip: 'Delete',
+                              onPressed: () {},
+                            ),
+                          ),
                         ],
                       ),
                     ),

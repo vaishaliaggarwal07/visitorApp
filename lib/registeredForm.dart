@@ -57,6 +57,43 @@ class RegisteredFormState extends State<RegisteredForm> {
                   return null;
                 },
               ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(7, 9, 7, 5),
+                child: Text(
+                  'Visitor phone number',
+                  style: TextStyle(
+                      color: Color(0xFFF39D23),
+                      fontFamily: 'Roboto',
+                      fontWeight: FontWeight.w500),
+                ),
+              ),
+              TextFormField(
+                keyboardType: TextInputType.name,
+                style: TextStyle(
+                    fontFamily: 'Roboto',
+                    color: Color(0xFF797979),
+                    fontWeight: FontWeight.normal,
+                    fontSize: 14),
+                decoration: InputDecoration(
+                    fillColor: Colors.white,
+                    filled: true,
+                    isDense: true,
+                    contentPadding: EdgeInsets.fromLTRB(15, 25, 25, 0),
+                    // labelText: 'Enter Name',
+                    hintText: 'Enter phone number',
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide.none,
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(10),
+                      ),
+                    )),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter phone numner';
+                  }
+                  return null;
+                },
+              ),
               Row(
                 children: [
                   Expanded(

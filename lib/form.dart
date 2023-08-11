@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:intl/intl.dart';
-
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -537,29 +538,46 @@ class MyCustomFormState extends State<MyCustomForm> {
     );
   }
 
-  void _saveVisitor() {
+  void _saveVisitor() async {
     String name = _nameController.text;
-    String contactNumber = _contactNumberController.text;
+    String phone_number = _contactNumberController.text;
     String organization = _OrganizationController.text;
     String email = _emailController.text;
-    String whomToMeet = _whomToMeetController.text;
-    String dateSelected = dateInput.text;
-    String purposeOfVisit = _purposeOfVisitController.text;
+    String whom_meet = _whomToMeetController.text;
+    // String dateSelected = dateInput.text;
+    String purpose = _purposeOfVisitController.text;
 
     Visitor newVisitor = Visitor(
-        name: name,
-        contactNumber: contactNumber,
-        email: email,
-        organization: organization,
-        whomToMeet: whomToMeet,
-        dateSelected: dateSelected,
-        purposeOfVisit: purposeOfVisit);
+      name: name,
+      email: email,
+      phone_number: phone_number,
+      organization: organization,
+      purpose: purpose,
+      whom_meet: whom_meet,
+      // dateSelected: dateSelected,
+    );
 
     setState(() {
       visitorsList.add(newVisitor);
     });
 
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => VisitorsListPage()));
+    List<Map<String, dynamic>> visitorJsonList =
+        visitorsList.map((visitor) => visitor.toJson()).toList();
+
+    Uri apiUrl = Uri.parse('http://localhost:5000/api/visitor');
+    final response = await http.post(
+      apiUrl,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(visitorJsonList),
+    );
+
+    if (response.statusCode == 200) {
+      // ignore: use_build_context_synchronously
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => VisitorsListPage()));
+    } else {
+      // Handle error.
+      print('Error sending data to the backend.');
+    }
   }
 }

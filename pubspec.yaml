@@ -19,6 +19,7 @@ dependencies:
   flutter:
     sdk: flutter
   intl: ^0.17.0
+  http: ^1.1.0
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -59,7 +60,8 @@ flutter:
         - asset: assets/fonts/Roboto-Thin.ttf
   assets:
     - assets/logo.png 
-    - assets/signIn.png       
+    - assets/signIn.png 
+    - assets/thankyou.png      
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
