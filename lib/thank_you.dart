@@ -1,12 +1,39 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:visitor_application/navbar.dart';
 
-class ThankYou extends StatelessWidget {
-  const ThankYou({super.key});
+class ThankYou extends StatefulWidget {
+  ThankYou({Key? key}) : super(key: key);
+  // const ThankYou({super.key});
 
   @override
+  State<ThankYou> createState() => _ThankYouState();
+}
+
+class _ThankYouState extends State<ThankYou> {
+  late DateTime checkoutTime;
+  late Timer timer;
+  @override
+  // void initStae() {
+  //   super.initState();
+  //   checkoutTime = DateTime.now();
+  //   timer = Timer.periodic(Duration(minutes: 1), (Timer t) {
+  //     setState(() {
+  //       checkoutTime = DateTime.now();
+  //     });
+  //   });
+  // }
+
+  // @override
+  // void dispose() {
+  //   timer.cancel();
+  //   super.dispose();
+  // }
+
+  // @override
   Widget build(BuildContext context) {
+    // String hourMinute = DateFormat('hh:mm').format(checkoutTime);
     return Container(
       decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -45,27 +72,30 @@ class ThankYou extends StatelessWidget {
             child: Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(15, 30, 15, 15),
+                  padding: const EdgeInsets.fromLTRB(15, 90, 15, 15),
                   child: Image.asset(
                     'thankyou.png',
-                    height: 100,
+                    height: 200,
                   ),
                 ),
                 Text(
                   'Thank you for visiting us',
                   style: TextStyle(
                       color: Color(0xFFFE4C2D),
-                      fontSize: 20,
+                      fontSize: 26,
                       fontFamily: 'Roboto',
                       fontWeight: FontWeight.w500),
                 ),
-                Text(
-                  'You are checking out at',
-                  style: TextStyle(
-                      color: Color(0xFFFE4C2D),
-                      fontSize: 30,
-                      fontFamily: 'Roboto',
-                      fontWeight: FontWeight.w500),
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Text(
+                    'You are checking out at ',
+                    style: TextStyle(
+                        color: Color(0xFFFE4C2D),
+                        fontSize: 20,
+                        fontFamily: 'Roboto',
+                        fontWeight: FontWeight.w500),
+                  ),
                 ),
               ],
             ),

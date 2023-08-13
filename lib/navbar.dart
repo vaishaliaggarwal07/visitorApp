@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:visitor_application/hostVisitor.dart';
 import 'package:visitor_application/main.dart';
+import 'package:visitor_application/thank_you.dart';
 import 'package:visitor_application/visitorListPage.dart';
 
 class Navbar extends StatelessWidget {
@@ -62,7 +63,7 @@ class Navbar extends StatelessWidget {
                     );
                   },
                   child: Text(
-                    'Host Visitor',
+                    'Register Visitor',
                     style: TextStyle(
                       color: Color(0xFFFE4C2D),
                       fontFamily: 'Roboto',
@@ -75,21 +76,21 @@ class Navbar extends StatelessWidget {
               Divider(
                 color: Color(0xFFF39D23),
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  'Planned Visitor',
-                  style: TextStyle(
-                    color: Color(0xFFFE4C2D),
-                    fontFamily: 'Roboto',
-                    fontWeight: FontWeight.w400,
-                    fontSize: 17,
-                  ),
-                ),
-              ),
-              Divider(
-                color: Color(0xFFF39D23),
-              ),
+              // Padding(
+              //   padding: const EdgeInsets.all(8.0),
+              //   child: Text(
+              //     'Planned Visitor',
+              //     style: TextStyle(
+              //       color: Color(0xFFFE4C2D),
+              //       fontFamily: 'Roboto',
+              //       fontWeight: FontWeight.w400,
+              //       fontSize: 17,
+              //     ),
+              //   ),
+              // ),
+              // Divider(
+              //   color: Color(0xFFF39D23),
+              // ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: GestureDetector(
@@ -116,13 +117,21 @@ class Navbar extends StatelessWidget {
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  'Check Out',
-                  style: TextStyle(
-                    color: Color(0xFFFE4C2D),
-                    fontFamily: 'Roboto',
-                    fontWeight: FontWeight.w400,
-                    fontSize: 17,
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ThankYou()),
+                    );
+                  },
+                  child: Text(
+                    'Check Out',
+                    style: TextStyle(
+                      color: Color(0xFFFE4C2D),
+                      fontFamily: 'Roboto',
+                      fontWeight: FontWeight.w400,
+                      fontSize: 17,
+                    ),
                   ),
                 ),
               ),

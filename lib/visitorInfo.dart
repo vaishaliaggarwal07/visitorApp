@@ -1,34 +1,52 @@
 import 'package:flutter/material.dart';
+import 'package:visitor_application/editInfo.dart';
 import 'package:visitor_application/thank_you.dart';
-
+import 'package:http/http.dart' as http;
 import 'navbar.dart';
 import 'visitor.dart';
+import 'package:intl/intl.dart';
 // import 'package:http/http.dart' as http;
 // import 'dart:convert';
 
-class VisitorsInfo extends StatelessWidget {
-  final Visitor visitor;
+class VisitorsInfo extends StatefulWidget {
+  Visitor visitor;
 
   VisitorsInfo({required this.visitor});
 
-//   Future<void> editVisitorInfo(Visitor updatedVisitor) async {
-//   final apiUrl = 'http://localhost:3000/edit-visitor/${updatedVisitor.id}'; // Replace with your server's URL
+  @override
+  State<VisitorsInfo> createState() => _VisitorsInfoState();
+}
 
-//   final response = await http.put(
-//     Uri.parse(apiUrl),
-//     headers: {'Content-Type': 'application/json'},
-//     body: jsonEncode(updatedVisitor.toJson()),
-//   );
+class _VisitorsInfoState extends State<VisitorsInfo> {
+  bool _isCheckedOut = false;
 
-//   if (response.statusCode == 200) {
-//     // API call was successful, handle success scenario
-//   } else {
-//     // Handle API call error
-//   }
-// }
+  Future<void> checkOutVisitor(int visitorId) async {
+    final apiUrl = Uri.parse('http://localhost:3000/check_out?id=$visitorId');
+    final response = await http.patch(apiUrl);
+
+    if (response.statusCode == 200) {
+      print('Visitor checked out successfully');
+      // Update the _isCheckedOut state here if needed
+    } else {
+      print('Error checking out visitor');
+    }
+  }
+
+  Future<void> _handleCheckOut() async {
+    if (!_isCheckedOut) {
+      await checkOutVisitor(
+          widget.visitor.id); // Update visitor status in the database
+      setState(() {
+        _isCheckedOut = true;
+      });
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => ThankYou()));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    Color statusColor = _isCheckedOut ? Colors.red : Colors.green;
     return Container(
       decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -109,7 +127,7 @@ class VisitorsInfo extends StatelessWidget {
                       SizedBox(
                           width: 170,
                           child: Text(
-                            visitor.name,
+                            widget.visitor.visitor_name,
                             style: TextStyle(
                                 fontFamily: 'Roboto',
                                 fontWeight: FontWeight.w400,
@@ -131,7 +149,7 @@ class VisitorsInfo extends StatelessWidget {
                       SizedBox(
                           width: 170,
                           child: Text(
-                            visitor.organization,
+                            widget.visitor.visitor_organization,
                             style: TextStyle(
                                 fontFamily: 'Roboto',
                                 fontWeight: FontWeight.w400,
@@ -153,7 +171,7 @@ class VisitorsInfo extends StatelessWidget {
                       SizedBox(
                           width: 170,
                           child: Text(
-                            visitor.email,
+                            widget.visitor.visitor_email,
                             style: TextStyle(
                                 fontFamily: 'Roboto',
                                 fontWeight: FontWeight.w400,
@@ -175,7 +193,7 @@ class VisitorsInfo extends StatelessWidget {
                       SizedBox(
                           width: 170,
                           child: Text(
-                            visitor.phone_number,
+                            widget.visitor.visitor_phone_number,
                             style: TextStyle(
                                 fontFamily: 'Roboto',
                                 fontWeight: FontWeight.w400,
@@ -197,7 +215,7 @@ class VisitorsInfo extends StatelessWidget {
                       SizedBox(
                           width: 170,
                           child: Text(
-                            visitor.whom_meet,
+                            widget.visitor.visitor_whom_meet,
                             style: TextStyle(
                                 fontFamily: 'Roboto',
                                 fontWeight: FontWeight.w400,
@@ -219,7 +237,7 @@ class VisitorsInfo extends StatelessWidget {
                       SizedBox(
                           width: 170,
                           child: Text(
-                            '08/08/2023',
+                            widget.visitor.visit_date,
                             style: TextStyle(
                                 fontFamily: 'Roboto',
                                 fontWeight: FontWeight.w400,
@@ -227,18 +245,34 @@ class VisitorsInfo extends StatelessWidget {
                           ))
                     ],
                   ),
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        SizedBox(
+                          width: 100,
+                          child: Text(
+                            'Status',
+                            style: TextStyle(
+                              fontFamily: 'Roboto',
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 170,
+                          child: CircleAvatar(
+                            radius: 7,
+                            backgroundColor: statusColor,
+                          ),
+                        ),
+                      ]),
                   Padding(
                     padding: const EdgeInsets.all(20),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         ElevatedButton.icon(
-                            onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => ThankYou()));
-                            },
+                            onPressed: _handleCheckOut,
                             icon: Icon(
                               // <-- Icon
                               Icons.outbond_outlined,
@@ -246,7 +280,7 @@ class VisitorsInfo extends StatelessWidget {
                               color: Color(0xFFFE4C2D),
                             ),
                             label: Text(
-                              'Check out',
+                              _isCheckedOut ? 'Checked Out' : 'Check Out',
                               style: TextStyle(
                                   color: Color(0xFFFE4C2D),
                                   fontSize: 15,
@@ -262,7 +296,19 @@ class VisitorsInfo extends StatelessWidget {
                             ) // <-- Text
                             ),
                         ElevatedButton.icon(
-                            onPressed: () {},
+                            onPressed: () async {
+                              final updatedVisitor = await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => EditVisitor(
+                                            visitor: widget.visitor,
+                                          )));
+                              if (updatedVisitor != null) {
+                                setState(() {
+                                  widget.visitor = updatedVisitor;
+                                });
+                              }
+                            },
                             icon: Icon(
                               // <-- Icon
                               Icons.edit,
@@ -286,7 +332,23 @@ class VisitorsInfo extends StatelessWidget {
                             ) // <-- Text
                             ),
                         ElevatedButton.icon(
-                            onPressed: () {},
+                            onPressed: () async {
+                              final response = await http.patch(
+                                Uri.parse(
+                                    'http://localhost:3000/delete_visitor'),
+                                body: {'id': widget.visitor.id.toString()},
+                              );
+                              if (response.statusCode == 200) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ThankYou(),
+                                  ),
+                                );
+                              } else {
+                                print('Error deleting visitor');
+                              }
+                            },
                             icon: Icon(
                               // <-- Icon
                               Icons.delete,

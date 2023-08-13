@@ -1,28 +1,23 @@
-import 'dart:io';
-import 'package:intl/intl.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart';
 
-import 'package:visitor_application/visitorListPage.dart';
+import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
+
+import 'package:flutter/material.dart';
+import 'package:visitor_application/visitor.dart';
 import 'package:visitor_application/visitors_list.dart';
 
-import 'uploadImage.dart';
-import 'visitor.dart';
-
-class MyCustomForm extends StatefulWidget {
-  const MyCustomForm({super.key});
+class EditVisitorForm extends StatefulWidget {
+  final Visitor visitor;
+  const EditVisitorForm({required this.visitor});
 
   @override
-  MyCustomFormState createState() {
-    return MyCustomFormState();
+  EditVisitorFormState createState() {
+    return EditVisitorFormState();
   }
 }
 
-class MyCustomFormState extends State<MyCustomForm> {
-  File? image;
+class EditVisitorFormState extends State<EditVisitorForm> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController _nameController = TextEditingController();
   TextEditingController _contactNumberController = TextEditingController();
@@ -30,26 +25,20 @@ class MyCustomFormState extends State<MyCustomForm> {
   TextEditingController _purposeOfVisitController = TextEditingController();
   TextEditingController _whomToMeetController = TextEditingController();
   TextEditingController _OrganizationController = TextEditingController();
-
   TextEditingController dateInput = TextEditingController();
   TextEditingController timeinput = TextEditingController();
-  Future pickImage(ImageSource source) async {
-    try {
-      final image = await ImagePicker().pickImage(source: source);
-      if (image == null) return;
-
-      final imageTemporary = File(image.path);
-      setState(() => this.image = imageTemporary);
-    } on PlatformException catch (e) {
-      print('Failed to pick image: $e');
-    }
-    return image;
-  }
 
   @override
   void initState() {
-    dateInput.text = "";
-    timeinput.text = "";
+    dateInput.text = widget.visitor.visit_date;
+    timeinput.text = widget.visitor.visit_time;
+    _nameController.text = widget.visitor.visitor_name;
+    _emailController.text = widget.visitor.visitor_email;
+    _contactNumberController.text = widget.visitor.visitor_phone_number;
+    _purposeOfVisitController.text = widget.visitor.visitor_purpose;
+    _whomToMeetController.text = widget.visitor.visitor_whom_meet;
+    _OrganizationController.text = widget.visitor.visitor_organization;
+    final visitorId = widget.visitor.id;
     super.initState();
   }
 
@@ -66,7 +55,7 @@ class MyCustomFormState extends State<MyCustomForm> {
             Padding(
               padding: const EdgeInsets.fromLTRB(7, 9, 7, 5),
               child: Text(
-                'Visitor Name',
+                'Name',
                 style: TextStyle(
                     color: Color(0xFFF39D23),
                     fontFamily: 'Roboto',
@@ -87,7 +76,7 @@ class MyCustomFormState extends State<MyCustomForm> {
                   isDense: true,
                   contentPadding: EdgeInsets.fromLTRB(15, 25, 25, 0),
                   // labelText: 'Enter Name',
-                  hintText: 'Enter Name',
+                  // hintText: 'Enter Name',
                   border: OutlineInputBorder(
                     borderSide: BorderSide.none,
                     borderRadius: BorderRadius.all(
@@ -96,7 +85,7 @@ class MyCustomFormState extends State<MyCustomForm> {
                   )),
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter visito\'s name';
+                  return 'Please enter some text';
                 }
                 return null;
               },
@@ -134,7 +123,7 @@ class MyCustomFormState extends State<MyCustomForm> {
                   )),
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter organization\'s name';
+                  return 'Please enter some text';
                 }
                 return null;
               },
@@ -172,7 +161,7 @@ class MyCustomFormState extends State<MyCustomForm> {
                   )),
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter whom you want to meet?';
+                  return 'Please enter some text';
                 }
                 return null;
               },
@@ -210,7 +199,7 @@ class MyCustomFormState extends State<MyCustomForm> {
                   )),
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter visitor\'s email';
+                  return 'Please enter some text';
                 }
                 return null;
               },
@@ -248,7 +237,7 @@ class MyCustomFormState extends State<MyCustomForm> {
                   )),
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter visitor\'s contact number';
+                  return 'Please enter some text';
                 }
                 return null;
               },
@@ -290,46 +279,6 @@ class MyCustomFormState extends State<MyCustomForm> {
                 }
                 return null;
               },
-            ),
-            Row(
-              children: [
-                Expanded(
-                  flex: 1,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 17, 0, 0),
-                    child: SizedBox(
-                      height: 40,
-                      child: ElevatedButton.icon(
-                          onPressed: () {
-                            pickImage(ImageSource.camera);
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => UploadImage()),
-                            );
-                          },
-                          icon: Icon(
-                            Icons.add_a_photo_outlined,
-                            color: Color(0xFFF39D23),
-                          ),
-                          label: Text(
-                            'Take a picture',
-                            style: TextStyle(
-                                color: Color(0xFFF39D23),
-                                fontFamily: 'Roboto',
-                                fontWeight: FontWeight.w500),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            side: BorderSide(
-                                width: 1.0, color: Color(0xFFFF5C00)),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10)),
-                          )),
-                    ),
-                  ),
-                ),
-              ],
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 17, 0, 0),
@@ -495,21 +444,13 @@ class MyCustomFormState extends State<MyCustomForm> {
                 Expanded(
                   flex: 1,
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 30, 0, 30),
+                    padding: const EdgeInsets.fromLTRB(0, 30, 0, 0),
                     child: SizedBox(
                       height: 50,
                       child: ElevatedButton(
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
-                            _saveVisitor();
-                            _nameController.clear();
-                            _contactNumberController.clear();
-                            _emailController.clear();
-                            _OrganizationController.clear();
-                            _purposeOfVisitController.clear();
-                            _whomToMeetController.clear();
-                            dateInput.clear();
-                            timeinput.clear();
+                            _submitForm();
                           }
                         },
                         style: ElevatedButton.styleFrom(
@@ -538,51 +479,43 @@ class MyCustomFormState extends State<MyCustomForm> {
     );
   }
 
-  void _saveVisitor() async {
-    String visitorName = _nameController.text;
-    String visitorPhoneNumber = _contactNumberController.text;
-    String visitorOrganization = _OrganizationController.text;
-    String visitorEmail = _emailController.text;
-    String visitorWhomMeet = _whomToMeetController.text;
-    String visitDate = dateInput.text;
-    String visitorPurpose = _purposeOfVisitController.text;
-    String visitTime = timeinput.text;
+  void _submitForm() async {
+    widget.visitor.visitor_name = _nameController.text;
+    widget.visitor.visitor_email = _emailController.text;
+    widget.visitor.visitor_phone_number = _contactNumberController.text;
+    widget.visitor.visitor_organization = _OrganizationController.text;
+    widget.visitor.visitor_purpose = _purposeOfVisitController.text;
 
-    Visitor newVisitor = Visitor(
-      status_visitor: false,
-      id: 0,
-      visitor_name: visitorName,
-      visitor_email: visitorEmail,
-      visitor_phone_number: visitorPhoneNumber,
-      visitor_organization: visitorOrganization,
-      visitor_purpose: visitorPurpose,
-      visitor_whom_meet: visitorWhomMeet,
-      visit_date: visitDate,
-      visit_time: visitTime,
-    );
+    widget.visitor.visitor_whom_meet = _whomToMeetController.text;
 
-    setState(() {
-      visitorsList.insert(0, newVisitor);
-      // newvisitorsList.add(newVisitor);
-    });
+    final visitorId = widget.visitor.id;
+    print(visitorId);
+    // int visitorIndex = visitorsList.indexOf(widget.visitor);
+    // if (visitorIndex != -1) {
+    //   visitorsList[visitorIndex] = widget.visitor;
+    // }
 
-    List<Map<String, dynamic>> visitorJsonList =
-        visitorsList.map((visitor) => visitor.toJson()).toList();
-
-    Uri apiUrl = Uri.parse('http://localhost:3000/insert_visitor');
-    final response = await http.post(
-      apiUrl,
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(visitorJsonList),
-    );
-
+    final apiUrl = Uri.parse('http://localhost:3000/update_visitor');
+    final updatedVisitorFields = {
+      'id': widget.visitor.id,
+      'visitor_name': widget.visitor.visitor_name,
+      'visitor_email': widget.visitor.visitor_email,
+      'visitor_phone_number': widget.visitor.visitor_phone_number,
+      'visitor_organization': widget.visitor.visitor_organization,
+      'visitor_purpose': widget.visitor.visitor_purpose,
+      'visitor_whom_meet': widget.visitor.visitor_whom_meet,
+    };
+    print(updatedVisitorFields);
+    final response = await http.patch(apiUrl,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(updatedVisitorFields));
     if (response.statusCode == 200) {
-      // ignore: use_build_context_synchronously
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => VisitorsListPage()));
+      // Successfully updated on the server
+      Navigator.pop(context, widget.visitor);
     } else {
-      // Handle error.
-      print('Error sending data to the backend.');
+      // Handle error
+      print('Error updating data on the server.');
     }
   }
+  // ${widget.visitor.id}
 }

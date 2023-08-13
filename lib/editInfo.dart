@@ -1,17 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:visitor_application/hostVisitorForm.dart';
-
+import 'package:visitor_application/editInfoForm.dart';
+import 'package:visitor_application/visitor.dart';
 
 import 'navbar.dart';
 
-class HostVisitor extends StatefulWidget {
-  const HostVisitor({super.key});
+class EditVisitor extends StatelessWidget {
+  final Visitor visitor;
+  const EditVisitor({required this.visitor});
 
-  @override
-  State<HostVisitor> createState() => _HostVisitorState();
-}
-
-class _HostVisitorState extends State<HostVisitor> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -63,7 +59,7 @@ class _HostVisitorState extends State<HostVisitor> {
                   GestureDetector(
                     onTap: () => {},
                     child: Text(
-                      'Register Visitor',
+                      'Edit Visitor',
                       style: TextStyle(
                           fontSize: 17,
                           color: Color(0xFFFE4C2D),
@@ -76,7 +72,7 @@ class _HostVisitorState extends State<HostVisitor> {
               Divider(
                 color: Color(0xFFF39D23),
               ),
-              HostVisitorForm(),
+              EditVisitorForm(visitor: visitor),
             ]),
           ),
         ),
