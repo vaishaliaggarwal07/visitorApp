@@ -3,14 +3,14 @@ import 'package:visitor_application/hostVisitorForm.dart';
 
 import 'navbar.dart';
 
-class HostVisitor extends StatefulWidget {
-  const HostVisitor({super.key});
+class SignUp extends StatefulWidget {
+  const SignUp({super.key});
 
   @override
-  State<HostVisitor> createState() => _HostVisitorState();
+  State<SignUp> createState() => _SignUpState();
 }
 
-class _HostVisitorState extends State<HostVisitor> {
+class _SignUpState extends State<SignUp> {
   @override
   Widget build(BuildContext context) {
     return Container(

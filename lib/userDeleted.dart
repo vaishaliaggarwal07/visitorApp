@@ -2,18 +2,17 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:visitor_application/navbar.dart';
+import 'package:visitor_application/visitorListPage.dart';
 
-import 'visitorListPage.dart';
-
-class ThankYou extends StatefulWidget {
-  ThankYou({Key? key}) : super(key: key);
+class UserDeleted extends StatefulWidget {
+  UserDeleted({Key? key}) : super(key: key);
   // const ThankYou({super.key});
 
   @override
-  State<ThankYou> createState() => _ThankYouState();
+  State<UserDeleted> createState() => _UserDeletedState();
 }
 
-class _ThankYouState extends State<ThankYou> {
+class _UserDeletedState extends State<UserDeleted> {
   late DateTime checkoutTime;
   late Timer timer;
   @override
@@ -51,18 +50,22 @@ class _ThankYouState extends State<ThankYou> {
             child: AppBar(
               toolbarHeight: 100,
               backgroundColor: Colors.transparent,
-              title:
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
                   // SizedBox(
                   //   height: 50,
                   // ),
                   Padding(
-                padding: const EdgeInsets.fromLTRB(85, 20, 0, 0),
-                child: Image.asset(
-                  'assets/logo.png',
-                  fit: BoxFit.cover,
-                  // height: 500,
-                  width: 180,
-                ),
+                    padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
+                    child: Image.asset(
+                      'assets/logo.png',
+                      fit: BoxFit.cover,
+                      // height: 500,
+                      width: 180,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -77,7 +80,7 @@ class _ThankYouState extends State<ThankYou> {
                   ),
                 ),
                 Text(
-                  'Thank you for visiting us',
+                  'User has been deleted',
                   style: TextStyle(
                       color: Color(0xFFFE4C2D),
                       fontSize: 26,
@@ -87,7 +90,7 @@ class _ThankYouState extends State<ThankYou> {
                 Padding(
                   padding: const EdgeInsets.all(20.0),
                   child: Text(
-                    'You are checking out at ',
+                    'Go back to visitor\'s list ',
                     style: TextStyle(
                         color: Color(0xFFFE4C2D),
                         fontSize: 20,

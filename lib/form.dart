@@ -1,12 +1,17 @@
 import 'dart:io';
+import 'package:file_picker/_internal/file_picker_web.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'dart:html' as html;
 
 import 'package:visitor_application/visitorListPage.dart';
+import 'package:visitor_application/visitorPass.dart';
 import 'package:visitor_application/visitors_list.dart';
 
 import 'uploadImage.dart';
@@ -22,8 +27,10 @@ class MyCustomForm extends StatefulWidget {
 }
 
 class MyCustomFormState extends State<MyCustomForm> {
-  File? image;
+  // File? image;
+  MemoryImage? image;
   final _formKey = GlobalKey<FormState>();
+  String imageFilename = '';
   TextEditingController _nameController = TextEditingController();
   TextEditingController _contactNumberController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
@@ -33,17 +40,130 @@ class MyCustomFormState extends State<MyCustomForm> {
 
   TextEditingController dateInput = TextEditingController();
   TextEditingController timeinput = TextEditingController();
-  Future pickImage(ImageSource source) async {
-    try {
-      final image = await ImagePicker().pickImage(source: source);
-      if (image == null) return;
+  // Future pickImage(ImageSource source) async {
+  //   try {
+  //     final image = await ImagePicker().pickImage(source: source);
+  //     if (image == null) return;
 
-      final imageTemporary = File(image.path);
-      setState(() => this.image = imageTemporary);
-    } on PlatformException catch (e) {
-      print('Failed to pick image: $e');
+  //     final imageTemporary = File(image.path);
+  //     setState(() => this.image = imageTemporary as MemoryImage?);
+
+  //     if (image != null) {
+  //       await sendImageToBackend(image);
+  //     }
+  //   } catch (e) {
+  //     print('Failed to pick image: $e');
+  //   }
+  // }
+  // Future<Visitor> fetchVisitorDataFromBackend(int visitorId) async {
+  //   Uri apiUrl = Uri.parse(
+  //       'http://localhost:3000/all_visitor/$visitorId'); // Update the URL endpoint accordingly
+
+  //   try {
+  //     final response = await http.get(apiUrl);
+
+  //     if (response.statusCode == 200) {
+  //       // Parse the JSON response and create a Visitor object
+  //       final Map<String, dynamic> jsonData = json.decode(response.body);
+
+  //       Visitor fetchedVisitor = Visitor(
+  //         status_visitor: jsonData['status_visitor'],
+  //         id: jsonData['id'],
+  //         visitor_name: jsonData['visitor_name'],
+  //         visitor_email: jsonData['visitor_email'],
+  //         visitor_phone_number: jsonData['visitor_phone_number'],
+  //         visitor_organization: jsonData['visitor_organization'],
+  //         visitor_purpose: jsonData['visitor_purpose'],
+  //         visitor_whom_meet: jsonData['visitor_whom_meet'],
+  //         visit_date: jsonData['visit_date'],
+  //         visit_time: jsonData['visit_time'],
+  //         image_filename: jsonData['image_filename'],
+  //         image_url: jsonData['image_url'],
+  //       );
+
+  //       return fetchedVisitor;
+  //     } else {
+  //       throw Exception('Failed to fetch visitor data');
+  //     }
+  //   } catch (e) {
+  //     throw Exception('Error connecting to the backend: $e');
+  //   }
+  // }
+
+  Future<List<Visitor>> fetchVisitors() async {
+    final apiUrl = Uri.parse('http://localhost:3000/all_visitor');
+    final response = await http.get(apiUrl);
+
+    if (response.statusCode == 200) {
+      final List<dynamic> jsonData = json.decode(response.body);
+
+      List<Visitor> updatedList =
+          jsonData.map((item) => Visitor.fromJson(item)).toList();
+      // updatedList.sort((a, b) => b.visit_date.compareTo(a.visit_date));
+      return updatedList;
+    } else {
+      throw Exception('Error fetching visitors from the server.');
     }
-    return image;
+  }
+
+  Future<void> pickImageFromGallery() async {
+    if (kIsWeb) {
+      try {
+        final result =
+            await FilePickerWeb.platform.pickFiles(type: FileType.image);
+        if (result != null) {
+          final platformFile = result.files.first;
+          final bytes = platformFile.bytes;
+          if (bytes != null) {
+            final selectedImage = Uint8List.fromList(bytes);
+            setState(() {
+              image = MemoryImage(selectedImage); // Update the 'image' state
+            });
+            await sendImageToBackend(selectedImage);
+          }
+        }
+      } catch (e) {
+        print('Failed to pick image: $e');
+      }
+    } else {
+      // try {
+      //   final image =
+      //       await ImagePicker().pickImage(source: ImageSource.gallery);
+      //   if (image == null) return;
+
+      //   final imageTemporary = File(image.path);
+      //   final bytes = await imageTemporary.readAsBytes();
+      //   final selectedImage = MemoryImage(Uint8List.fromList(bytes));
+      //   setState(() => this.image = selectedImage);
+      //   await sendImageToBackend(imageTemporary);
+      // } on PlatformException catch (e) {
+      //   print('Failed to pick image: $e');
+      // }
+      print('failed');
+    }
+  }
+
+  Future<void> sendImageToBackend(Uint8List imageBytes) async {
+    // final imageFile = File(imageXFile.path);
+    // final byteData = await selectedImage.toByteData();
+    // final uint8List = byteData.buffer.asUint8List();
+    final apiUrl = Uri.parse(
+        'http://localhost:3000/upload'); // Change this URL to your backend API URL
+    var request = http.MultipartRequest('POST', apiUrl)
+      ..files.add(http.MultipartFile.fromBytes('image', imageBytes,
+          filename: 'image.jpg'));
+
+    try {
+      final response = await request.send();
+      if (response.statusCode == 200) {
+        // Image uploaded successfully
+        print('Image uploaded to the backend.');
+      } else {
+        print('Error uploading image to the backend.');
+      }
+    } catch (e) {
+      print('Error uploading image: $e');
+    }
   }
 
   @override
@@ -52,6 +172,18 @@ class MyCustomFormState extends State<MyCustomForm> {
     timeinput.text = "";
     super.initState();
   }
+
+  Widget selectedImageWidget() {
+    if (image != null) {
+      return Container(
+          width: 100, height: 100, child: Image.memory(image!.bytes));
+    } else {
+      return const Text('no image selected');
+    }
+  }
+
+  final RegExp _phoneNumberRegExp = RegExp(r'^[0-9]{10}$');
+  final RegExp _emailRegExp = RegExp(r'^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$');
 
   @override
   Widget build(BuildContext context) {
@@ -97,6 +229,9 @@ class MyCustomFormState extends State<MyCustomForm> {
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter visito\'s name';
+                }
+                if (value.contains(RegExp(r'[0-9]'))) {
+                  return 'Name should not contain any numbers';
                 }
                 return null;
               },
@@ -174,6 +309,9 @@ class MyCustomFormState extends State<MyCustomForm> {
                 if (value == null || value.isEmpty) {
                   return 'Please enter whom you want to meet?';
                 }
+                if (value.contains(RegExp(r'[0-9]'))) {
+                  return 'Whom to meet should not contain any numbers';
+                }
                 return null;
               },
             ),
@@ -211,6 +349,8 @@ class MyCustomFormState extends State<MyCustomForm> {
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter visitor\'s email';
+                } else if (!_emailRegExp.hasMatch(value)) {
+                  return 'Invalid email address';
                 }
                 return null;
               },
@@ -249,6 +389,8 @@ class MyCustomFormState extends State<MyCustomForm> {
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter visitor\'s contact number';
+                } else if (!_phoneNumberRegExp.hasMatch(value)) {
+                  return 'Invalid phone number';
                 }
                 return null;
               },
@@ -301,12 +443,24 @@ class MyCustomFormState extends State<MyCustomForm> {
                       height: 40,
                       child: ElevatedButton.icon(
                           onPressed: () {
-                            pickImage(ImageSource.camera);
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => UploadImage()),
-                            );
+                            if (kIsWeb) {
+                              pickImageFromGallery();
+                            } else {
+                              print('failed');
+                              // pickImage(ImageSource.camera);
+                              // Navigator.push(
+                              //   context,
+                              //   MaterialPageRoute(
+                              //       builder: (context) => UploadImage()),
+                              // );
+                            }
+
+                            // pickImage(ImageSource.gallery);
+                            // Navigator.push(
+                            //   context,
+                            //   MaterialPageRoute(
+                            //       builder: (context) => UploadImage()),
+                            // );
                           },
                           icon: Icon(
                             Icons.add_a_photo_outlined,
@@ -329,6 +483,7 @@ class MyCustomFormState extends State<MyCustomForm> {
                     ),
                   ),
                 ),
+                selectedImageWidget(),
               ],
             ),
             Padding(
@@ -549,17 +704,18 @@ class MyCustomFormState extends State<MyCustomForm> {
     String visitTime = timeinput.text;
 
     Visitor newVisitor = Visitor(
-      status_visitor: false,
-      id: 0,
-      visitor_name: visitorName,
-      visitor_email: visitorEmail,
-      visitor_phone_number: visitorPhoneNumber,
-      visitor_organization: visitorOrganization,
-      visitor_purpose: visitorPurpose,
-      visitor_whom_meet: visitorWhomMeet,
-      visit_date: visitDate,
-      visit_time: visitTime,
-    );
+        status_visitor: false,
+        id: 0,
+        visitor_name: visitorName,
+        visitor_email: visitorEmail,
+        visitor_phone_number: visitorPhoneNumber,
+        visitor_organization: visitorOrganization,
+        visitor_purpose: visitorPurpose,
+        visitor_whom_meet: visitorWhomMeet,
+        visit_date: visitDate,
+        visit_time: visitTime,
+        image_filename: '',
+        image_url: '');
 
     setState(() {
       visitorsList.insert(0, newVisitor);
@@ -577,9 +733,16 @@ class MyCustomFormState extends State<MyCustomForm> {
     );
 
     if (response.statusCode == 200) {
+      List<Visitor> fetchedVisitor = await fetchVisitors();
+      print(fetchedVisitor.first.id);
+      print(newVisitor);
       // ignore: use_build_context_synchronously
       Navigator.push(
-          context, MaterialPageRoute(builder: (context) => VisitorsListPage()));
+          context,
+          MaterialPageRoute(
+              builder: (context) => VisitorPass(
+                    visitor: fetchedVisitor.last,
+                  )));
     } else {
       // Handle error.
       print('Error sending data to the backend.');

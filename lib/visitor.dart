@@ -9,6 +9,8 @@ class Visitor {
   final String visit_time;
   int id;
   bool status_visitor;
+  String image_filename;
+  String image_url;
 
   Visitor({
     required this.status_visitor,
@@ -21,6 +23,8 @@ class Visitor {
     required this.visitor_whom_meet,
     required this.visit_date,
     required this.visit_time,
+    required this.image_filename,
+    required this.image_url,
   });
 
   Map<String, dynamic> toJson() => {
@@ -29,11 +33,11 @@ class Visitor {
         'visitor_email': visitor_email,
         'visitor_phone_number': visitor_phone_number,
         'visitor_organization': visitor_organization,
-        'visitor_purpose': visitor_phone_number,
+        'visitor_purpose': visitor_purpose,
         'visitor_whom_meet': visitor_whom_meet,
         'visit_date': visit_date,
         'visit_time': visit_time,
-
+        'image_filename': image_filename,
         // 'dateSelected':dateSelected,
       };
 
@@ -49,6 +53,8 @@ class Visitor {
       visitor_purpose: json['visitor_purpose'],
       visit_time: json['visit_time'],
       visitor_whom_meet: json['visitor_whom_meet'],
+      image_filename: json['image_filename'],
+      image_url: json['image_url'],
 
       // ... other properties
     );
