@@ -1,6 +1,13 @@
+import 'dart:convert';
+
 import 'package:intl/intl.dart';
 
 import 'package:flutter/material.dart';
+import 'package:visitor_application/visitor.dart';
+import 'package:visitor_application/visitorListPage.dart';
+import 'package:visitor_application/visitorPass.dart';
+import 'package:visitor_application/visitors_list.dart';
+import 'package:http/http.dart' as http;
 
 class HostVisitorForm extends StatefulWidget {
   const HostVisitorForm({super.key});
@@ -13,14 +20,21 @@ class HostVisitorForm extends StatefulWidget {
 
 class HostVisitorFormState extends State<HostVisitorForm> {
   final _formKey = GlobalKey<FormState>();
-
+  TextEditingController _nameController = TextEditingController();
+  TextEditingController _contactNumberController = TextEditingController();
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _purposeOfVisitController = TextEditingController();
+  TextEditingController _whomToMeetController = TextEditingController();
+  TextEditingController _OrganizationController = TextEditingController();
   TextEditingController dateInput = TextEditingController();
   TextEditingController timeinput = TextEditingController();
 
   @override
   void initState() {
-    dateInput.text = "";
-    timeinput.text = "";
+    DateTime currentDate = DateTime.now();
+    dateInput.text = DateFormat('dd-MM-yy').format(currentDate);
+    timeinput.text = DateFormat('HH:mm').format(currentDate);
+
     super.initState();
   }
 
@@ -30,14 +44,14 @@ class HostVisitorFormState extends State<HostVisitorForm> {
     return Form(
       key: _formKey,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(60, 10, 60, 20),
+        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.fromLTRB(7, 9, 7, 5),
               child: Text(
-                'Visitor Name',
+                'Visitor Name *',
                 style: TextStyle(
                     color: Color(0xFFF39D23),
                     fontFamily: 'Roboto',
@@ -45,6 +59,7 @@ class HostVisitorFormState extends State<HostVisitorForm> {
               ),
             ),
             TextFormField(
+              controller: _nameController,
               keyboardType: TextInputType.name,
               style: TextStyle(
                   fontFamily: 'Roboto',
@@ -82,6 +97,7 @@ class HostVisitorFormState extends State<HostVisitorForm> {
               ),
             ),
             TextFormField(
+              controller: _OrganizationController,
               keyboardType: TextInputType.text,
               style: TextStyle(
                   fontFamily: 'Roboto',
@@ -101,12 +117,12 @@ class HostVisitorFormState extends State<HostVisitorForm> {
                       Radius.circular(10),
                     ),
                   )),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter some text';
-                }
-                return null;
-              },
+              // validator: (value) {
+              //   if (value == null || value.isEmpty) {
+              //     return 'Please enter some text';
+              //   }
+              //   return null;
+              // },
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(7, 9, 7, 5),
@@ -119,6 +135,7 @@ class HostVisitorFormState extends State<HostVisitorForm> {
               ),
             ),
             TextFormField(
+              controller: _whomToMeetController,
               keyboardType: TextInputType.name,
               style: TextStyle(
                   fontFamily: 'Roboto',
@@ -138,12 +155,12 @@ class HostVisitorFormState extends State<HostVisitorForm> {
                       Radius.circular(10),
                     ),
                   )),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter some text';
-                }
-                return null;
-              },
+              // validator: (value) {
+              //   if (value == null || value.isEmpty) {
+              //     return 'Please enter some text';
+              //   }
+              //   return null;
+              // },
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(7, 9, 7, 5),
@@ -156,6 +173,7 @@ class HostVisitorFormState extends State<HostVisitorForm> {
               ),
             ),
             TextFormField(
+              controller: _emailController,
               keyboardType: TextInputType.emailAddress,
               style: TextStyle(
                   fontFamily: 'Roboto',
@@ -175,12 +193,12 @@ class HostVisitorFormState extends State<HostVisitorForm> {
                       Radius.circular(10),
                     ),
                   )),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter some text';
-                }
-                return null;
-              },
+              // validator: (value) {
+              //   if (value == null || value.isEmpty) {
+              //     return 'Please enter some text';
+              //   }
+              //   return null;
+              // },
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(7, 9, 7, 5),
@@ -193,6 +211,7 @@ class HostVisitorFormState extends State<HostVisitorForm> {
               ),
             ),
             TextFormField(
+              controller: _contactNumberController,
               keyboardType: TextInputType.phone,
               style: TextStyle(
                   fontFamily: 'Roboto',
@@ -212,12 +231,12 @@ class HostVisitorFormState extends State<HostVisitorForm> {
                       Radius.circular(10),
                     ),
                   )),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter some text';
-                }
-                return null;
-              },
+              // validator: (value) {
+              //   if (value == null || value.isEmpty) {
+              //     return 'Please enter some text';
+              //   }
+              //   return null;
+              // },
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(7, 9, 7, 5),
@@ -230,6 +249,7 @@ class HostVisitorFormState extends State<HostVisitorForm> {
               ),
             ),
             TextFormField(
+              controller: _purposeOfVisitController,
               keyboardType: TextInputType.text,
               style: TextStyle(
                   fontFamily: 'Roboto',
@@ -249,12 +269,12 @@ class HostVisitorFormState extends State<HostVisitorForm> {
                       Radius.circular(10),
                     ),
                   )),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter some text';
-                }
-                return null;
-              },
+              // validator: (value) {
+              //   if (value == null || value.isEmpty) {
+              //     return 'Please enter some text';
+              //   }
+              //   return null;
+              // },
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 17, 0, 0),
@@ -425,12 +445,7 @@ class HostVisitorFormState extends State<HostVisitorForm> {
                       height: 50,
                       child: ElevatedButton(
                         onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(const SnackBar(
-                              content: Text('Processing Data'),
-                            ));
-                          }
+                          _saveVisitor();
                         },
                         style: ElevatedButton.styleFrom(
                             backgroundColor: Color(0xFFF39D23),
@@ -456,5 +471,59 @@ class HostVisitorFormState extends State<HostVisitorForm> {
         ),
       ),
     );
+  }
+
+  void _saveVisitor() async {
+    String visitorName = _nameController.text;
+    String visitorPhoneNumber = _contactNumberController.text;
+    String visitorOrganization = _OrganizationController.text;
+    String visitorEmail = _emailController.text;
+    String visitorWhomMeet = _whomToMeetController.text;
+    String visitDate = dateInput.text;
+    String visitorPurpose = _purposeOfVisitController.text;
+    String visitTime = timeinput.text;
+    if (visitDate.isEmpty) {
+      visitDate = DateFormat('dd-MM-yyyy').format(DateTime.now());
+    }
+    if (visitTime.isEmpty) {
+      visitDate = DateFormat('HH:mm').format(DateTime.now());
+    }
+    Visitor newVisitor = Visitor(
+        status_visitor: false,
+        id: 0,
+        visitor_name: visitorName,
+        visitor_email: visitorEmail,
+        visitor_phone_number: visitorPhoneNumber,
+        visitor_organization: visitorOrganization,
+        visitor_purpose: visitorPurpose,
+        visitor_whom_meet: visitorWhomMeet,
+        visit_date: visitDate,
+        visit_time: visitTime,
+        image_filename: '',
+        image_url: '');
+
+    setState(() {
+      visitorsList.insert(0, newVisitor);
+      // newvisitorsList.add(newVisitor);
+    });
+
+    List<Map<String, dynamic>> visitorJsonList =
+        visitorsList.map((visitor) => visitor.toJson()).toList();
+
+    Uri apiUrl = Uri.parse('http://20.55.109.32:80/insert_visitor');
+    final response = await http.post(
+      apiUrl,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(visitorJsonList),
+    );
+    print(visitorJsonList);
+    if (response.statusCode == 200) {
+      // ignore: use_build_context_synchronously
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => VisitorsListPage()));
+    } else {
+      // Handle error.
+      print('Error sending data to the backend.');
+    }
   }
 }

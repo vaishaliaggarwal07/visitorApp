@@ -31,14 +31,11 @@ class EditVisitor extends StatelessWidget {
                 // SizedBox(
                 //   height: 50,
                 // ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
-                  child: Image.asset(
-                    'assets/logo.png',
-                    fit: BoxFit.cover,
-                    // height: 500,
-                    width: 180,
-                  ),
+                Image.asset(
+                  'assets/logo.png',
+                  fit: BoxFit.cover,
+                  // height: 500,
+                  width: 200,
                 ),
               ],
             ),

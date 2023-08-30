@@ -1,6 +1,7 @@
-import 'dart:html';
+// import 'dart:html';
 
 import 'dart:typed_data';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
@@ -9,10 +10,12 @@ import 'package:visitor_application/navbar.dart';
 import 'package:visitor_application/visitor.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:pdf/widgets.dart' as pdf;
 import 'package:printing/printing.dart';
-import 'package:universal_html/html.dart' as html;
-import 'dart:typed_data';
-import 'package:barcode_widget/barcode_widget.dart';
+import 'package:flutter_pdfview/flutter_pdfview.dart';
+// import 'package:universal_html/html.dart' as html;
+// import 'dart:typed_data';
+// import 'package:barcode_widget/barcode_widget.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class VisitorPass extends StatefulWidget {
@@ -25,7 +28,7 @@ class VisitorPass extends StatefulWidget {
 
 class _VisitorPassState extends State<VisitorPass> {
   late final PdfImage pdfImage;
-  Uint8List? visitorImageBytes;
+  late Uint8List visitorImageBytes;
   @override
   void initState() {
     super.initState();
@@ -53,108 +56,181 @@ class _VisitorPassState extends State<VisitorPass> {
       print('Visitor image not fetched yet.');
       return;
     }
-
+    print('Generating PDF..');
     final pdf = pw.Document();
 
+    final pdfImage = PdfImage.file(
+      pdf.document,
+      bytes: visitorImageBytes,
+    );
+    final myFont = await rootBundle.load('assets/fonts/Roboto-Regular.ttf');
     pdf.addPage(pw.Page(build: (pw.Context context) {
       return pw.Center(
           child: pw.Container(
-              color: PdfColor.fromHex('#FFB449'),
-              child: pw.Row(children: [
-                pw.Expanded(
-                    flex: 1,
-                    child: pw.Padding(
+              decoration: pw.BoxDecoration(
+                  color: PdfColor.fromHex('#FFB449'),
+                  borderRadius: pw.BorderRadius.circular(10),
+                  border: pw.Border.all(
+                      color: PdfColor.fromHex('#000000'), width: 2)),
+              height: 200,
+              child: pw.Row(
+                  mainAxisAlignment: pw.MainAxisAlignment.spaceAround,
+                  children: [
+                    pw.Padding(
                         padding: pw.EdgeInsets.all(10),
-                        child: pw.Image(PdfImage(pdf.document,
-                            image: visitorImageBytes!,
+                        child: pw.Image(
+                            pw.MemoryImage(
+                              visitorImageBytes,
+                            ),
+                            width: 150,
+                            height: 150,
+                            fit: pw.BoxFit.contain)),
+                    pw.Padding(
+                      padding: const pw.EdgeInsets.all(10),
+                      child: pw.Column(
+                        crossAxisAlignment: pw.CrossAxisAlignment.start,
+                        mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
+                        children: [
+                          pw.Row(
+                            mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
+                            children: [
+                              pw.Text(
+                                'Name: ',
+                                style: pw.TextStyle(font: pw.Font.ttf(myFont)),
+                              ),
+                              pw.SizedBox(
+                                width: 5,
+                              ),
+                              pw.Text(
+                                '${widget.visitor.visitor_name}',
+                                style: pw.TextStyle(
+                                    font: pw.Font.ttf(myFont),
+                                    color: PdfColor.fromHex('#FF2600')),
+                                maxLines: null,
+                              ),
+                            ],
+                          ),
+                          pw.Row(
+                            mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
+                            children: [
+                              pw.Text(
+                                'Oragnization: ',
+                                style: pw.TextStyle(font: pw.Font.ttf(myFont)),
+                              ),
+                              pw.SizedBox(
+                                width: 5,
+                              ),
+                              pw.Text(
+                                '${widget.visitor.visitor_organization}',
+                                style: pw.TextStyle(
+                                    font: pw.Font.ttf(myFont),
+                                    color: PdfColor.fromHex('#FF2600')),
+                                maxLines: null,
+                              ),
+                            ],
+                          ),
+                          pw.Row(
+                            mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
+                            children: [
+                              pw.Text(
+                                'Email: ',
+                                style: pw.TextStyle(font: pw.Font.ttf(myFont)),
+                              ),
+                              pw.SizedBox(width: 5),
+                              pw.Text(
+                                '${widget.visitor.visitor_email}',
+                                style: pw.TextStyle(
+                                    font: pw.Font.ttf(myFont),
+                                    color: PdfColor.fromHex('#FF2600')),
+                                maxLines: null,
+                              ),
+                            ],
+                          ),
+                          pw.Row(
+                            mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
+                            children: [
+                              pw.Text(
+                                'Mobile no.: ',
+                                style: pw.TextStyle(font: pw.Font.ttf(myFont)),
+                              ),
+                              pw.SizedBox(
+                                width: 5,
+                              ),
+                              pw.Text(
+                                '${widget.visitor.visitor_phone_number}',
+                                style: pw.TextStyle(
+                                    font: pw.Font.ttf(myFont),
+                                    color: PdfColor.fromHex('#FF2600')),
+                                maxLines: null,
+                              ),
+                            ],
+                          ),
+                          pw.Row(
+                            mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
+                            children: [
+                              pw.Text(
+                                'Here to meet: ',
+                                style: pw.TextStyle(font: pw.Font.ttf(myFont)),
+                              ),
+                              pw.SizedBox(
+                                width: 5,
+                              ),
+                              pw.Text(
+                                '${widget.visitor.visitor_whom_meet}',
+                                style: pw.TextStyle(
+                                    font: pw.Font.ttf(myFont),
+                                    color: PdfColor.fromHex('#FF2600')),
+                                maxLines: null,
+                              ),
+                            ],
+                          ),
+                          pw.BarcodeWidget(
+                            data:
+                                "Name: ${widget.visitor.visitor_name}, Organization: ${widget.visitor.visitor_organization}, Email: ${widget.visitor.visitor_email}, Phone No.: ${widget.visitor.visitor_phone_number}, Here to meet: ${widget.visitor.visitor_whom_meet}",
+                            barcode: pw.Barcode.qrCode(),
                             width: 60,
-                            height: 60) as pw.ImageProvider))),
-                // pw.Expanded(
-                //   flex: 1,
-                //   child: pw.Padding(
-                //     padding: pw.EdgeInsets.all(10),
-                //     child: SizedBox(
-                //       width: 60,
-                //       height: 60,
-                //       child: BarcodeWidget(
-                //         barcode: Barcode.qrCode(),
-                //         data: 'Visitor Info: ${widget.visitor.toJson().toString()}',
-                //         width: 60,
-                //         height: 60,
-                //       ),
-                //     )
-                //   )
-                // )
-              ])));
+                            height: 60,
+                          )
+                        ],
+                      ),
+                    ),
+                  ])));
     }));
-    //   final pdfBytes = pdf.save();
-    //   final blob = html.Blob([pdfBytes]);
-    //   final url = html.Url.createObjectUrlFromBlob(blob);
-    //     final pdfIframe = '<iframe src="$url" width="100%" height="100%"></iframe>';
-    // final newWindow = html.window.open('', '_blank');
-    // newWindow.document.write(pdfIframe);
-    //   html.window.open(url, '_blank');
-    // final anchor = html.AnchorElement(href: url)
-    //   ..target = 'blank'
-    //   ..click();
-
-    // html.Url.revokeObjectUrl(url);
-    // final output = await Printing.convertHtml(
-    //   format: PrintingFormat.android,
-    //   html: pdf.save(),
-    // );
-
-    // await Printing.directPrintPdf(
-    //   format: PrintingFormat.android,
-    //   // printer: // Replace with your printer name
-    //   onLayout: (PdfPageFormat format) => output, printer: ,
-    // );
+    print('generated pdf');
+    // return pdf;
 
     await Printing.layoutPdf(onLayout: (format) => pdf.save());
   }
 
-  void _printVisitorPassWeb() {
-    final content = '''
-<div style = "wdith:400px; height: 200px; background-color:#FFB449;">
-<div>
-          <img src="${widget.visitor.image_url}" alt="Visitor Image" width="60" height="60">
-          <div>
-            <span>Name: ${widget.visitor.visitor_name}</span><br>
-            <span>Organization: ${widget.visitor.visitor_organization}</span><br>
-            <span>Email: ${widget.visitor.visitor_email}</span><br>
-            <span>Mobile No.: ${widget.visitor.visitor_phone_number}</span><br>
-            <span>Here to meet: ${widget.visitor.visitor_whom_meet}</span><br>
-          </div>
-        </div>
-      </div>
-      ''';
+  // Future<void> printVisitorPassPDF(pw.Document pdf) async {
+  //   final pdfData = await pdf.save();
+  //   await Printing.layoutPdf(onLayout: (format) => pdfData);
+  // }
 
-    final html = '''
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <title>Visitor Pass</title>
-      </head>
-      <body>
-        $content
-        <script>
-          function printContent() {
-            window.print();
-          }
-          printContent();
-        </script>
-      </body>
-      </html>
-    ''';
+  // Future<void> viewVisitorPassPDF() async {
+  //   try {
+  //     print('Generating PDF...');
+  //     final pdf = await _printVisitorPass();
 
-    final blob = Blob([html]);
-    final url = Url.createObjectUrlFromBlob(blob);
-    final anchor = AnchorElement(href: url)
-      ..target = 'blank'
-      ..click();
-
-    Url.revokeObjectUrl(url);
-  }
+  //     final pdfdata = await pdf.save();
+  //     print('pdf data generated');
+  //     // ignore: use_build_context_synchronously
+  //     Navigator.push(
+  //         context,
+  //         MaterialPageRoute(
+  //           builder: (context) => PDFView(
+  //             pdfData: pdfdata,
+  //             // pdfData: pdfdata,
+  //             enableSwipe: true,
+  //           ),
+  //         ));
+  //     print('printing pdf');
+  //     await printVisitorPassPDF(pdf);
+  //     print('pdf orinted');
+  //   } catch (e) {
+  //     print('Error: $e');
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -177,320 +253,272 @@ class _VisitorPassState extends State<VisitorPass> {
                 // SizedBox(
                 //   height: 50,
                 // ),
-                Padding(
-              padding: const EdgeInsets.fromLTRB(85, 20, 0, 0),
-              child: Image.asset(
-                'assets/logo.png',
-                fit: BoxFit.cover,
-                // height: 500,
-                width: 180,
-              ),
+                Image.asset(
+              'assets/logo.png',
+              fit: BoxFit.cover,
+              // height: 500,
+              width: 200,
             ),
           ),
         ),
-        body: SingleChildScrollView(
-          child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                SizedBox(
-                  height: 20,
+        body: Column(
+            // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            // mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              SizedBox(
+                height: 20,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 8,
+                  ),
+                  Text(
+                    'New Visitor',
+                    style: TextStyle(
+                        fontSize: 17,
+                        color: Color(0xFFFE4C2D),
+                        fontFamily: 'Roboto',
+                        fontWeight: FontWeight.w500),
+                  ),
+                ],
+              ),
+              Divider(
+                color: Color(0xFFF39D23),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Card(
+                      color: Color(0xFFFFB449),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          side: BorderSide(
+                            color: Color(0xFFC8102E),
+                            width: 1.0,
+                          )),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: CircleAvatar(
+                              radius: 40,
+                              backgroundImage:
+                                  NetworkImage(widget.visitor.image_url),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(10, 20, 20, 0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Text(
+                                      'Name: ',
+                                      style: TextStyle(fontFamily: 'Roboto'),
+                                    ),
+                                    SizedBox(
+                                      width: 5,
+                                    ),
+                                    Text(
+                                      '${widget.visitor.visitor_name}',
+                                      style: TextStyle(
+                                          fontFamily: 'Roboto',
+                                          color: Color(0xFFC8102E)),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: null,
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Text(
+                                      'Oragnization: ',
+                                      style: TextStyle(fontFamily: 'Roboto'),
+                                    ),
+                                    SizedBox(
+                                      width: 5,
+                                    ),
+                                    Text(
+                                      '${widget.visitor.visitor_organization}',
+                                      style: TextStyle(
+                                          fontFamily: 'Roboto',
+                                          color: Color(0xFFC8102E)),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: null,
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Text(
+                                      'Email: ',
+                                      style: TextStyle(fontFamily: 'Roboto'),
+                                    ),
+                                    SizedBox(width: 5),
+                                    Text(
+                                      '${widget.visitor.visitor_email}',
+                                      style: TextStyle(
+                                          fontFamily: 'Roboto',
+                                          color: Color(0xFFC8102E)),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: null,
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Text(
+                                      'Mobile no.: ',
+                                      style: TextStyle(fontFamily: 'Roboto'),
+                                    ),
+                                    SizedBox(
+                                      width: 5,
+                                    ),
+                                    Text(
+                                      '${widget.visitor.visitor_phone_number}',
+                                      style: TextStyle(
+                                          fontFamily: 'Roboto',
+                                          color: Color(0xFFC8102E)),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: null,
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Text(
+                                      'Here to meet: ',
+                                      style: TextStyle(fontFamily: 'Roboto'),
+                                    ),
+                                    SizedBox(
+                                      width: 5,
+                                    ),
+                                    Text(
+                                      '${widget.visitor.visitor_whom_meet}',
+                                      style: TextStyle(
+                                          fontFamily: 'Roboto',
+                                          color: Color(0xFFC8102E)),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: null,
+                                    ),
+                                  ],
+                                ),
+                                QrImageView(
+                                  data:
+                                      "Name: ${widget.visitor.visitor_name}, Organization: ${widget.visitor.visitor_organization}, Email: ${widget.visitor.visitor_email}, Phone No.: ${widget.visitor.visitor_phone_number}, Here to meet: ${widget.visitor.visitor_whom_meet}",
+                                  version: QrVersions.auto,
+                                  size: 65.0,
+                                )
+                              ],
+                            ),
+                          ),
+                        ],
+                      )),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+              ),
+              // SizedBox(
+              //   height: 20,
+              // ),
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Row(
                   children: [
-                    SizedBox(
-                      width: 8,
-                    ),
-                    Text(
-                      'New Visitor',
-                      style: TextStyle(
-                          fontSize: 17,
-                          color: Color(0xFFFE4C2D),
-                          fontFamily: 'Roboto',
-                          fontWeight: FontWeight.w500),
+                    Expanded(
+                      flex: 1,
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                        child: SizedBox(
+                          height: 40,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              _printVisitorPass();
+                              // Navigator.push(
+                              //   context,
+                              //   MaterialPageRoute(
+                              //     builder: (context) => VisitorsListPage(),
+                              //   ),
+                              // );
+                            },
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: Color(0xFFFFFFFF),
+                                side: BorderSide(
+                                    width: 1.0, color: Color(0xFFFF5C00)),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10))),
+                            child: Text(
+                              'Print Visitor Pass',
+                              style: TextStyle(
+                                  fontFamily: 'Roboto',
+                                  color: Color(0xFFF39D23),
+                                  fontWeight: FontWeight.normal,
+                                  fontSize: 18),
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),
-                Divider(
-                  color: Color(0xFFF39D23),
-                ),
-                SizedBox(
-                  height: 50,
-                ),
-                Center(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(40, 0, 40, 0),
-                    child: Container(
-                      width: 420,
-                      height: 230,
-                      decoration: BoxDecoration(
-                        color: Colors.transparent,
+              ),
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  children: [
+                    Expanded(
+                      flex: 1,
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                        child: SizedBox(
+                          height: 40,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => SecondRoute(),
+                                ),
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: Color(0xFFFFFFFF),
+                                side: BorderSide(
+                                    width: 1.0, color: Color(0xFFFF5C00)),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10))),
+                            child: Text(
+                              'Add new Visitor',
+                              style: TextStyle(
+                                  fontFamily: 'Roboto',
+                                  color: Color(0xFFF39D23),
+                                  fontWeight: FontWeight.normal,
+                                  fontSize: 18),
+                            ),
+                          ),
+                        ),
                       ),
-                      child: Card(
-                          color: Color(0xFFFFB449),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              side: BorderSide(
-                                color: Color(0xFFC8102E),
-                                width: 1.0,
-                              )),
-                          child: Row(
-                            children: [
-                              // Padding(
-                              //   padding: const EdgeInsets.all(10.0),
-                              //   child: ClipRRect(
-                              //     borderRadius: BorderRadius.circular(10),
-                              //     child: Image.network(
-                              //       visitor.image_url,
-                              //       width: 100,
-                              //       height: 130,
-                              //       fit: BoxFit.cover,
-                              //     ),
-                              //   ),
-                              Padding(
-                                padding: const EdgeInsets.fromLTRB(20, 0, 8, 0),
-                                child: CircleAvatar(
-                                  radius: 65,
-                                  backgroundImage:
-                                      NetworkImage(widget.visitor.image_url),
-                                ),
-                              ),
-
-                              Center(
-                                child: Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(20, 40, 20, 0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
-                                        children: [
-                                          Text(
-                                            'Name: ',
-                                            style:
-                                                TextStyle(fontFamily: 'Roboto'),
-                                          ),
-                                          SizedBox(
-                                            width: 5,
-                                          ),
-                                          Text(
-                                            '${widget.visitor.visitor_name}',
-                                            style: TextStyle(
-                                                fontFamily: 'Roboto',
-                                                color: Color(0xFFC8102E)),
-                                          )
-                                        ],
-                                      ),
-
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
-                                        children: [
-                                          Text(
-                                            'Oragnization: ',
-                                            style:
-                                                TextStyle(fontFamily: 'Roboto'),
-                                          ),
-                                          SizedBox(
-                                            width: 5,
-                                          ),
-                                          Text(
-                                            '${widget.visitor.visitor_organization}',
-                                            style: TextStyle(
-                                                fontFamily: 'Roboto',
-                                                color: Color(0xFFC8102E)),
-                                          )
-                                        ],
-                                      ),
-
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
-                                        children: [
-                                          Text(
-                                            'Email: ',
-                                            style:
-                                                TextStyle(fontFamily: 'Roboto'),
-                                          ),
-                                          SizedBox(width: 5),
-                                          Text(
-                                            '${widget.visitor.visitor_email}',
-                                            style: TextStyle(
-                                                fontFamily: 'Roboto',
-                                                color: Color(0xFFC8102E)),
-                                          )
-                                        ],
-                                      ),
-
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
-                                        children: [
-                                          Text(
-                                            'Mobile no.: ',
-                                            style:
-                                                TextStyle(fontFamily: 'Roboto'),
-                                          ),
-                                          SizedBox(
-                                            width: 5,
-                                          ),
-                                          Text(
-                                            '${widget.visitor.visitor_phone_number}',
-                                            style: TextStyle(
-                                                fontFamily: 'Roboto',
-                                                color: Color(0xFFC8102E)),
-                                          )
-                                        ],
-                                      ),
-
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
-                                        children: [
-                                          Text(
-                                            'Here to meet: ',
-                                            style:
-                                                TextStyle(fontFamily: 'Roboto'),
-                                          ),
-                                          SizedBox(
-                                            width: 5,
-                                          ),
-                                          Text(
-                                            '${widget.visitor.visitor_whom_meet}',
-                                            style: TextStyle(
-                                                fontFamily: 'Roboto',
-                                                color: Color(0xFFC8102E)),
-                                          )
-                                        ],
-                                      ),
-                                      // Text(
-                                      //     'Organization: ${widget.visitor.visitor_organization}'),
-                                      // Text('Email: ${widget.visitor.visitor_email}'),
-                                      // Text(
-                                      //     'Mobile No.: ${widget.visitor.visitor_phone_number}'),
-                                      // Text(
-                                      //     'Here to meet: ${widget.visitor.visitor_whom_meet}'),
-                                      Container(
-                                          width: 150,
-                                          alignment: Alignment.bottomLeft,
-                                          child: QrImageView(
-                                            data:
-                                                "Name: ${widget.visitor.visitor_name}, Organization: ${widget.visitor.visitor_organization}, Email: ${widget.visitor.visitor_email}, Phone No.: ${widget.visitor.visitor_phone_number}, Here to meet: ${widget.visitor.visitor_whom_meet}",
-                                            version: QrVersions.auto,
-                                            size: 80.0,
-                                          )),
-
-                                      // Expanded(
-                                      //   child: BarcodeWidget(
-                                      //     data:
-                                      //         'Visitor Info: ${widget.visitor.toJson().toString()}',
-                                      //     barcode: Barcode.code128(),
-                                      //     // width: 60,
-                                      //     height: 60,
-                                      //   ),
-                                      // )
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          )),
                     ),
-                  ),
+                  ],
                 ),
-                SizedBox(
-                  height: 20,
-                ),
-                // ElevatedButton(
-                //   onPressed: _printVisitorPass,
-                //   child: Text('Print Visitor Pass'),
-                // ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(60, 10, 60, 0),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        flex: 1,
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 30, 0, 30),
-                          child: SizedBox(
-                            height: 50,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                _printVisitorPass();
-                                // Navigator.push(
-                                //   context,
-                                //   MaterialPageRoute(
-                                //     builder: (context) => VisitorsListPage(),
-                                //   ),
-                                // );
-                              },
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: Color(0xFFFFFFFF),
-                                  side: BorderSide(
-                                      width: 1.0, color: Color(0xFFFF5C00)),
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10))),
-                              child: Text(
-                                'Print Visitor Pass',
-                                style: TextStyle(
-                                    fontFamily: 'Roboto',
-                                    color: Color(0xFFF39D23),
-                                    fontWeight: FontWeight.normal,
-                                    fontSize: 18),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(60, 0, 60, 0),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        flex: 1,
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 30, 0, 30),
-                          child: SizedBox(
-                            height: 50,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => SecondRoute(),
-                                  ),
-                                );
-                              },
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: Color(0xFFFFFFFF),
-                                  side: BorderSide(
-                                      width: 1.0, color: Color(0xFFFF5C00)),
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10))),
-                              child: Text(
-                                'Add new Visitor',
-                                style: TextStyle(
-                                    fontFamily: 'Roboto',
-                                    color: Color(0xFFF39D23),
-                                    fontWeight: FontWeight.normal,
-                                    fontSize: 18),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ]),
-        ),
+              ),
+            ]),
       ),
     );
   }

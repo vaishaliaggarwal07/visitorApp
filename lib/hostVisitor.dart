@@ -32,14 +32,11 @@ class _HostVisitorState extends State<HostVisitor> {
                 // SizedBox(
                 //   height: 50,
                 // ),
-                Padding(
-              padding: const EdgeInsets.fromLTRB(85, 20, 0, 0),
-              child: Image.asset(
-                'assets/logo.png',
-                fit: BoxFit.cover,
-                // height: 500,
-                width: 180,
-              ),
+                Image.asset(
+              'assets/logo.png',
+              fit: BoxFit.cover,
+              // height: 500,
+              width: 200,
             ),
           ),
         ),
@@ -55,9 +52,7 @@ class _HostVisitorState extends State<HostVisitor> {
                   SizedBox(
                     width: 8,
                   ),
-                  GestureDetector(
-                    onTap: () => {},
-                    child: Text(
+                 Text(
                       'Register Visitor',
                       style: TextStyle(
                           fontSize: 17,
@@ -65,7 +60,7 @@ class _HostVisitorState extends State<HostVisitor> {
                           fontFamily: 'Roboto',
                           fontWeight: FontWeight.w500),
                     ),
-                  ),
+                  
                 ],
               ),
               Divider(

@@ -1,6 +1,6 @@
-import 'dart:io';
-import 'package:file_picker/_internal/file_picker_web.dart';
-import 'package:file_picker/file_picker.dart';
+// import 'dart:io';
+// import 'package:file_picker/_internal/file_picker_web.dart';
+// import 'package:file_picker/file_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -8,13 +8,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'dart:html' as html;
+// import 'dart:html' as html;
 
-import 'package:visitor_application/visitorListPage.dart';
+// import 'package:visitor_application/visitorListPage.dart';
 import 'package:visitor_application/visitorPass.dart';
 import 'package:visitor_application/visitors_list.dart';
 
-import 'uploadImage.dart';
+// import 'uploadImage.dart';
 import 'visitor.dart';
 
 class MyCustomForm extends StatefulWidget {
@@ -91,7 +91,7 @@ class MyCustomFormState extends State<MyCustomForm> {
   // }
 
   Future<List<Visitor>> fetchVisitors() async {
-    final apiUrl = Uri.parse('http://localhost:3000/all_visitor');
+    final apiUrl = Uri.parse('http://20.55.109.32:80/all_visitor');
     final response = await http.get(apiUrl);
 
     if (response.statusCode == 200) {
@@ -106,49 +106,17 @@ class MyCustomFormState extends State<MyCustomForm> {
     }
   }
 
-  Future<void> pickImageFromGallery() async {
-    if (kIsWeb) {
-      try {
-        final result =
-            await FilePickerWeb.platform.pickFiles(type: FileType.image);
-        if (result != null) {
-          final platformFile = result.files.first;
-          final bytes = platformFile.bytes;
-          if (bytes != null) {
-            final selectedImage = Uint8List.fromList(bytes);
-            setState(() {
-              image = MemoryImage(selectedImage); // Update the 'image' state
-            });
-            await sendImageToBackend(selectedImage);
-          }
-        }
-      } catch (e) {
-        print('Failed to pick image: $e');
-      }
-    } else {
-      // try {
-      //   final image =
-      //       await ImagePicker().pickImage(source: ImageSource.gallery);
-      //   if (image == null) return;
-
-      //   final imageTemporary = File(image.path);
-      //   final bytes = await imageTemporary.readAsBytes();
-      //   final selectedImage = MemoryImage(Uint8List.fromList(bytes));
-      //   setState(() => this.image = selectedImage);
-      //   await sendImageToBackend(imageTemporary);
-      // } on PlatformException catch (e) {
-      //   print('Failed to pick image: $e');
-      // }
-      print('failed');
+  Future<void> pickImageFromCamera() async {
+    final image = await ImagePicker().pickImage(source: ImageSource.camera);
+    if (image != null) {
+      final imageBytes = await image.readAsBytes();
+      await sendImageToBackend(Uint8List.fromList(imageBytes));
     }
   }
 
   Future<void> sendImageToBackend(Uint8List imageBytes) async {
-    // final imageFile = File(imageXFile.path);
-    // final byteData = await selectedImage.toByteData();
-    // final uint8List = byteData.buffer.asUint8List();
     final apiUrl = Uri.parse(
-        'http://localhost:3000/upload'); // Change this URL to your backend API URL
+        'http://20.55.109.32:80/upload'); // Change this URL to your backend API URL
     var request = http.MultipartRequest('POST', apiUrl)
       ..files.add(http.MultipartFile.fromBytes('image', imageBytes,
           filename: 'image.jpg'));
@@ -168,17 +136,42 @@ class MyCustomFormState extends State<MyCustomForm> {
 
   @override
   void initState() {
-    dateInput.text = "";
-    timeinput.text = "";
+    DateTime currentDate = DateTime.now();
+    dateInput.text = DateFormat('dd-MM-yy').format(currentDate);
+    timeinput.text = DateFormat('HH:mm').format(currentDate);
     super.initState();
   }
 
   Widget selectedImageWidget() {
     if (image != null) {
-      return Container(
-          width: 100, height: 100, child: Image.memory(image!.bytes));
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Image.memory(
+            image!.bytes,
+            width: 50,
+            height: 50,
+          ),
+          // child: const Text(
+          //   'Image uploaded',
+          //   style: TextStyle(
+          //       fontFamily: 'Roboto', color: Color(0xFF797979), fontSize: 14),
+          // ),
+        ),
+      );
+      // return Container(
+      //     width: 100, height: 100, child: Image.memory(image!.bytes));
     } else {
-      return const Text('no image selected');
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: const Text(
+            'No image selected',
+            style: TextStyle(
+                fontFamily: 'Roboto', color: Color(0xFF797979), fontSize: 14),
+          ),
+        ),
+      );
     }
   }
 
@@ -191,14 +184,14 @@ class MyCustomFormState extends State<MyCustomForm> {
     return Form(
       key: _formKey,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(60, 10, 60, 20),
+        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.fromLTRB(7, 9, 7, 5),
               child: Text(
-                'Visitor Name',
+                'Visitor Name *',
                 style: TextStyle(
                     color: Color(0xFFF39D23),
                     fontFamily: 'Roboto',
@@ -220,6 +213,9 @@ class MyCustomFormState extends State<MyCustomForm> {
                   contentPadding: EdgeInsets.fromLTRB(15, 25, 25, 0),
                   // labelText: 'Enter Name',
                   hintText: 'Enter Name',
+                  hintStyle: TextStyle(
+                    color: Color(0xFF797979),
+                  ),
                   border: OutlineInputBorder(
                     borderSide: BorderSide.none,
                     borderRadius: BorderRadius.all(
@@ -228,7 +224,7 @@ class MyCustomFormState extends State<MyCustomForm> {
                   )),
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter visito\'s name';
+                  return 'Please enter visitor\'s name';
                 }
                 if (value.contains(RegExp(r'[0-9]'))) {
                   return 'Name should not contain any numbers';
@@ -239,7 +235,7 @@ class MyCustomFormState extends State<MyCustomForm> {
             Padding(
               padding: const EdgeInsets.fromLTRB(7, 9, 7, 5),
               child: Text(
-                'Visitor Organization',
+                'Visitor Organization *',
                 style: TextStyle(
                     color: Color(0xFFF39D23),
                     fontFamily: 'Roboto',
@@ -261,6 +257,9 @@ class MyCustomFormState extends State<MyCustomForm> {
                   contentPadding: EdgeInsets.fromLTRB(15, 25, 25, 0),
                   // labelText: 'Enter Name',
                   hintText: 'Please enter organization',
+                  hintStyle: TextStyle(
+                    color: Color(0xFF797979),
+                  ),
                   border: OutlineInputBorder(
                     borderSide: BorderSide.none,
                     borderRadius: BorderRadius.all(
@@ -277,7 +276,7 @@ class MyCustomFormState extends State<MyCustomForm> {
             Padding(
               padding: const EdgeInsets.fromLTRB(7, 9, 7, 5),
               child: Text(
-                'Here to meet?',
+                'Here to meet? *',
                 style: TextStyle(
                     color: Color(0xFFF39D23),
                     fontFamily: 'Roboto',
@@ -298,7 +297,7 @@ class MyCustomFormState extends State<MyCustomForm> {
                   isDense: true,
                   contentPadding: EdgeInsets.fromLTRB(15, 25, 25, 0),
                   // labelText: 'Enter Name',
-                  hintText: 'Please enter person name whom you want to meet',
+                  hintText: 'Please enter whom to meet',
                   border: OutlineInputBorder(
                     borderSide: BorderSide.none,
                     borderRadius: BorderRadius.all(
@@ -318,7 +317,7 @@ class MyCustomFormState extends State<MyCustomForm> {
             Padding(
               padding: const EdgeInsets.fromLTRB(7, 9, 7, 5),
               child: Text(
-                'Visitor Email ID',
+                'Visitor Email ID *',
                 style: TextStyle(
                     color: Color(0xFFF39D23),
                     fontFamily: 'Roboto',
@@ -339,7 +338,7 @@ class MyCustomFormState extends State<MyCustomForm> {
                   isDense: true,
                   contentPadding: EdgeInsets.fromLTRB(15, 25, 25, 0),
                   // labelText: 'Enter Name',
-                  hintText: 'Please enter email',
+                  hintText: 'Please enter email ',
                   border: OutlineInputBorder(
                     borderSide: BorderSide.none,
                     borderRadius: BorderRadius.all(
@@ -358,7 +357,7 @@ class MyCustomFormState extends State<MyCustomForm> {
             Padding(
               padding: const EdgeInsets.fromLTRB(7, 9, 7, 5),
               child: Text(
-                'Visitor Contact number',
+                'Visitor Contact number *',
                 style: TextStyle(
                     color: Color(0xFFF39D23),
                     fontFamily: 'Roboto',
@@ -426,12 +425,12 @@ class MyCustomFormState extends State<MyCustomForm> {
                       Radius.circular(10),
                     ),
                   )),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter some text';
-                }
-                return null;
-              },
+              // validator: (value) {
+              //   if (value == null || value.isEmpty) {
+              //     return 'Please enter some text';
+              //   }
+              //   return null;
+              // },
             ),
             Row(
               children: [
@@ -443,17 +442,18 @@ class MyCustomFormState extends State<MyCustomForm> {
                       height: 40,
                       child: ElevatedButton.icon(
                           onPressed: () {
-                            if (kIsWeb) {
-                              pickImageFromGallery();
-                            } else {
-                              print('failed');
-                              // pickImage(ImageSource.camera);
-                              // Navigator.push(
-                              //   context,
-                              //   MaterialPageRoute(
-                              //       builder: (context) => UploadImage()),
-                              // );
-                            }
+                            pickImageFromCamera();
+                            // if (kIsWeb) {
+                            //   // pickImageFromGallery();
+                            // } else {
+                            //   print('failed');
+                            //   // pickImage(ImageSource.camera);
+                            //   // Navigator.push(
+                            //   //   context,
+                            //   //   MaterialPageRoute(
+                            //   //       builder: (context) => UploadImage()),
+                            //   // );
+                            // }
 
                             // pickImage(ImageSource.gallery);
                             // Navigator.push(
@@ -483,9 +483,9 @@ class MyCustomFormState extends State<MyCustomForm> {
                     ),
                   ),
                 ),
-                selectedImageWidget(),
               ],
             ),
+            selectedImageWidget(),
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 17, 0, 0),
               child: Row(
@@ -545,7 +545,6 @@ class MyCustomFormState extends State<MyCustomForm> {
                                   });
 
                               if (pickedDate != null) {
-                                print(pickedDate);
                                 String formattedDate =
                                     DateFormat('yyyy-MM-dd').format(pickedDate);
                                 print(formattedDate);
@@ -553,7 +552,9 @@ class MyCustomFormState extends State<MyCustomForm> {
                                   dateInput.text = formattedDate;
                                 });
                               } else {
-                                print(DateTime.now());
+                                setState(() {
+                                  dateInput.text = DateTime.now() as String;
+                                });
                               }
                             },
                           ),
@@ -634,7 +635,9 @@ class MyCustomFormState extends State<MyCustomForm> {
                                       formattedTime; //set the value of text field.
                                 });
                               } else {
-                                print("time not selected");
+                                setState(() {
+                                  timeinput.text = DateTime.now() as String;
+                                });
                               }
                             },
                           ),
@@ -663,8 +666,6 @@ class MyCustomFormState extends State<MyCustomForm> {
                             _OrganizationController.clear();
                             _purposeOfVisitController.clear();
                             _whomToMeetController.clear();
-                            dateInput.clear();
-                            timeinput.clear();
                           }
                         },
                         style: ElevatedButton.styleFrom(
@@ -702,7 +703,12 @@ class MyCustomFormState extends State<MyCustomForm> {
     String visitDate = dateInput.text;
     String visitorPurpose = _purposeOfVisitController.text;
     String visitTime = timeinput.text;
-
+    if (visitDate.isEmpty) {
+      visitDate = DateFormat('dd-MM-yyyy').format(DateTime.now());
+    }
+    if (visitTime.isEmpty) {
+      visitDate = DateFormat('HH:mm').format(DateTime.now());
+    }
     Visitor newVisitor = Visitor(
         status_visitor: false,
         id: 0,
@@ -725,23 +731,23 @@ class MyCustomFormState extends State<MyCustomForm> {
     List<Map<String, dynamic>> visitorJsonList =
         visitorsList.map((visitor) => visitor.toJson()).toList();
 
-    Uri apiUrl = Uri.parse('http://localhost:3000/insert_visitor');
+    Uri apiUrl = Uri.parse('http://20.55.109.32:80/insert_visitor');
     final response = await http.post(
       apiUrl,
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(visitorJsonList),
     );
-
+    print(visitorJsonList);
     if (response.statusCode == 200) {
       List<Visitor> fetchedVisitor = await fetchVisitors();
       print(fetchedVisitor.first.id);
-      print(newVisitor);
+      print(newVisitor.visitor_name);
       // ignore: use_build_context_synchronously
       Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) => VisitorPass(
-                    visitor: fetchedVisitor.last,
+                    visitor: fetchedVisitor.first,
                   )));
     } else {
       // Handle error.

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:visitor_application/hostVisitor.dart';
+import 'package:visitor_application/logIn.dart';
 import 'package:visitor_application/main.dart';
-import 'package:visitor_application/thank_you.dart';
+// import 'package:visitor_application/thank_you.dart';
 import 'package:visitor_application/visitorListPage.dart';
+import 'auth.dart';
 
 class Navbar extends StatelessWidget {
   @override
@@ -118,14 +120,15 @@ class Navbar extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: GestureDetector(
-                  onTap: () {
-                    Navigator.push(
+                  onTap: () async {
+                    await Auth().signOut();
+                    Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (context) => ThankYou()),
+                      MaterialPageRoute(builder: (context) => LogIn()),
                     );
                   },
                   child: Text(
-                    'Check Out',
+                    'Log Out',
                     style: TextStyle(
                       color: Color(0xFFFE4C2D),
                       fontFamily: 'Roboto',

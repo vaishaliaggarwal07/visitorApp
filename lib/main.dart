@@ -1,8 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:visitor_application/form.dart';
 import 'package:visitor_application/navbar.dart';
+import 'package:visitor_application/signUp.dart';
+import 'widget_tree.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  // options: FirebaseOptions(
+  //     apiKey: "AIzaSyDsBBxPVZO8gsYznVnUT0ftKYuSCLN9joM",
+  //     appId: "1:989992678108:web:30be8fb8ca684bf2fffa19",
+  //     messagingSenderId: "989992678108",
+  //     projectId: "visitorapp-561df"));
   runApp(MyApp());
 }
 
@@ -16,7 +26,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         fontFamily: 'Roboto',
       ),
-      home: MyHomePage(),
+      home: WidgetTree(),
     );
   }
 }
@@ -36,20 +46,20 @@ class _MyHomePageState extends State<MyHomePage> {
         child: AppBar(
           toolbarHeight: 100,
           backgroundColor: Colors.transparent,
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
-                child: Image.asset(
-                  'assets/logo.png',
-                  fit: BoxFit.cover,
-                  // height: 500,
-                  width: 180,
-                ),
-              ),
-            ],
+          // title: Row(
+          //   mainAxisAlignment: MainAxisAlignment.center,
+          //   children: [
+          title: Align(
+            alignment: Alignment.center,
+            child: Image.asset(
+              'assets/logo.png',
+              fit: BoxFit.cover,
+              // height: 500,
+              width: 200,
+            ),
           ),
+          //   ],
+          // ),
         ),
       ),
 
@@ -62,7 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
             'Welcome to Metaorange',
             style: TextStyle(
                 color: Color(0xFFFE4C2D),
-                fontSize: 30,
+                fontSize: 25,
                 fontFamily: 'Roboto',
                 fontWeight: FontWeight.w500),
           ),
@@ -71,14 +81,14 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           IconButton(
             icon: Image.asset(
-              'assets/signin.png',
+              'assets/signIn.png',
               height: 100,
             ),
             iconSize: 5,
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const SecondRoute()),
+                MaterialPageRoute(builder: (context) => const SignUp()),
               );
             },
           ),
@@ -117,15 +127,19 @@ class _SecondRouteState extends State<SecondRoute> {
                 // SizedBox(
                 //   height: 50,
                 // ),
-                Padding(
-              padding: const EdgeInsets.fromLTRB(85, 20, 0, 0),
+                //   Padding(
+                // padding: const EdgeInsets.fromLTRB(85, 20, 0, 0),
+                // child: Image.asset(
+                Align(
+              alignment: Alignment.centerLeft,
               child: Image.asset(
                 'assets/logo.png',
                 fit: BoxFit.cover,
                 // height: 500,
-                width: 180,
+                width: 200,
               ),
             ),
+            // ),
           ),
         ),
         body: SingleChildScrollView(

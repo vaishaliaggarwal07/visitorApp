@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:visitor_application/editInfo.dart';
 import 'package:visitor_application/thank_you.dart';
 import 'package:http/http.dart' as http;
-import 'package:visitor_application/userDeleted.dart';
+// import 'package:visitor_application/userDeleted.dart';
 import 'navbar.dart';
 import 'visitor.dart';
-import 'package:intl/intl.dart';
+// import 'package:intl/intl.dart';
 // import 'package:http/http.dart' as http;
 // import 'dart:convert';
 
@@ -31,9 +31,10 @@ class _VisitorsInfoState extends State<VisitorsInfo> {
   bool _isCheckedOut = false;
 
   Future<void> checkOutVisitor(int visitorId) async {
-    final apiUrl = Uri.parse('http://localhost:3000/check_out?id=$visitorId');
+    final apiUrl = Uri.parse('http://20.55.109.32:80/check_out?id=$visitorId');
     final response = await http.patch(apiUrl);
-
+    print(visitorId);
+   
     if (response.statusCode == 200) {
       print('Visitor checked out successfully');
       // Update the _isCheckedOut state here if needed
@@ -87,7 +88,7 @@ class _VisitorsInfoState extends State<VisitorsInfo> {
     if (confirmDeletion) {
       // Perform the deletion logic
       final response = await http.patch(
-        Uri.parse('http://localhost:3000/delete_visitor'),
+        Uri.parse('http://20.55.109.32:80/delete_visitor'),
         body: {'id': widget.visitor.id.toString()},
       );
 
@@ -141,14 +142,11 @@ class _VisitorsInfoState extends State<VisitorsInfo> {
                 //   height: 50,
                 // ),
 
-                Padding(
-              padding: const EdgeInsets.fromLTRB(85, 20, 0, 0),
-              child: Image.asset(
-                'assets/logo.png',
-                fit: BoxFit.cover,
-                // height: 500,
-                width: 180,
-              ),
+                Image.asset(
+              'assets/logo.png',
+              fit: BoxFit.cover,
+              // height: 500,
+              width: 200,
             ),
           ),
         ),
@@ -184,10 +182,10 @@ class _VisitorsInfoState extends State<VisitorsInfo> {
               backgroundImage: NetworkImage(widget.visitor.image_url),
             ),
             SizedBox(
-              height: 40,
+              height: 20,
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(60, 0, 60, 0),
+              padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -323,102 +321,119 @@ class _VisitorsInfoState extends State<VisitorsInfo> {
                           ))
                     ],
                   ),
+                  SizedBox(
+                    height: 20,
+                  ),
                   Padding(
-                    padding: const EdgeInsets.all(20),
+                    padding: const EdgeInsets.all(0),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        ElevatedButton.icon(
-                            onPressed: !_isCheckedOut ? null : _handleCheckOut,
-                            icon: Icon(
-                              // <-- Icon
-                              Icons.outbond_outlined,
-                              size: 17.0,
-                              color: Color(0xFFFE4C2D),
-                            ),
-                            label: Text(
-                              !_isCheckedOut ? 'Checked Out' : 'Check Out',
-                              style: TextStyle(
-                                  color: Color(0xFFFE4C2D),
-                                  fontSize: 15,
-                                  fontFamily: 'Roboto',
-                                  fontWeight: FontWeight.w500),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              side: BorderSide(
-                                  width: 1.0, color: Color(0xFFFF5C00)),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10)),
-                            ) // <-- Text
-                            ),
-                        ElevatedButton.icon(
-                            onPressed: !_isCheckedOut
-                                ? null
-                                : () async {
-                                    final updatedVisitor = await Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => EditVisitor(
-                                                  visitor: widget.visitor,
-                                                )));
-                                    if (updatedVisitor != null) {
-                                      setState(() {
-                                        widget.visitor = updatedVisitor;
-                                      });
-                                    }
-                                  },
-                            icon: Icon(
-                              // <-- Icon
-                              Icons.edit,
-                              size: 17.0,
-                              color: Color(0xFFFE4C2D),
-                            ),
-                            label: Text(
-                              'Edit',
-                              style: TextStyle(
-                                  color: Color(0xFFFE4C2D),
-                                  fontSize: 15,
-                                  fontFamily: 'Roboto',
-                                  fontWeight: FontWeight.w500),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              side: BorderSide(
-                                  width: 1.0, color: Color(0xFFFF5C00)),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10)),
-                            ) // <-- Text
-                            ),
-                        ElevatedButton.icon(
-                            onPressed: !_isCheckedOut
-                                ? null
-                                : () async {
-                                    await _handleDelete(context);
-                                    
-                                  },
-                            icon: Icon(
-                              // <-- Icon
-                              Icons.delete,
-                              size: 17.0,
-                              color: Color(0xFFFE4C2D),
-                            ),
-                            label: Text(
-                              'Delete',
-                              style: TextStyle(
-                                  color: Color(0xFFFE4C2D),
-                                  fontSize: 15,
-                                  fontFamily: 'Roboto',
-                                  fontWeight: FontWeight.w500),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              side: BorderSide(
-                                  width: 1.0, color: Color(0xFFFF5C00)),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10)),
-                            ) // <-- Text
-                            ),
+                        SizedBox(
+                          height: 35,
+                          // width: 120,
+                          child: ElevatedButton.icon(
+                              onPressed:
+                                  !_isCheckedOut ? null : _handleCheckOut,
+                              icon: Icon(
+                                // <-- Icon
+                                Icons.outbond_outlined,
+                                size: 15.0,
+                                color: Color(0xFFFE4C2D),
+                              ),
+                              label: Text(
+                                !_isCheckedOut ? 'Checked Out' : 'Check Out',
+                                style: TextStyle(
+                                    color: Color(0xFFFE4C2D),
+                                    fontSize: 12,
+                                    fontFamily: 'Roboto',
+                                    fontWeight: FontWeight.w500),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                side: BorderSide(
+                                    width: 1.0, color: Color(0xFFFF5C00)),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10)),
+                              ) // <-- Text
+                              ),
+                        ),
+                        SizedBox(
+                          // width: 120,
+                          height: 35,
+                          child: ElevatedButton.icon(
+                              onPressed: !_isCheckedOut
+                                  ? null
+                                  : () async {
+                                      final updatedVisitor =
+                                          await Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      EditVisitor(
+                                                        visitor: widget.visitor,
+                                                      )));
+                                      if (updatedVisitor != null) {
+                                        setState(() {
+                                          widget.visitor = updatedVisitor;
+                                        });
+                                      }
+                                    },
+                              icon: Icon(
+                                // <-- Icon
+                                Icons.edit,
+                                size: 17.0,
+                                color: Color(0xFFFE4C2D),
+                              ),
+                              label: Text(
+                                'Edit',
+                                style: TextStyle(
+                                    color: Color(0xFFFE4C2D),
+                                    fontSize: 12,
+                                    fontFamily: 'Roboto',
+                                    fontWeight: FontWeight.w500),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                side: BorderSide(
+                                    width: 1.0, color: Color(0xFFFF5C00)),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10)),
+                              ) // <-- Text
+                              ),
+                        ),
+                        SizedBox(
+                          // width: 100,
+                          height: 35,
+                          child: ElevatedButton.icon(
+                              onPressed: !_isCheckedOut
+                                  ? null
+                                  : () async {
+                                      await _handleDelete(context);
+                                    },
+                              icon: Icon(
+                                // <-- Icon
+                                Icons.delete,
+                                size: 15.0,
+                                color: Color(0xFFFE4C2D),
+                              ),
+                              label: Text(
+                                'Delete',
+                                style: TextStyle(
+                                    color: Color(0xFFFE4C2D),
+                                    fontSize: 12,
+                                    fontFamily: 'Roboto',
+                                    fontWeight: FontWeight.w500),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                side: BorderSide(
+                                    width: 1.0, color: Color(0xFFFF5C00)),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10)),
+                              ) // <-- Text
+                              ),
+                        ),
                       ],
                     ),
                   )

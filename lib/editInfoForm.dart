@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 
 import 'package:flutter/material.dart';
 import 'package:visitor_application/visitor.dart';
-import 'package:visitor_application/visitors_list.dart';
+// import 'package:visitor_application/visitors_list.dart';
 
 class EditVisitorForm extends StatefulWidget {
   final Visitor visitor;
@@ -38,7 +38,7 @@ class EditVisitorFormState extends State<EditVisitorForm> {
     _purposeOfVisitController.text = widget.visitor.visitor_purpose;
     _whomToMeetController.text = widget.visitor.visitor_whom_meet;
     _OrganizationController.text = widget.visitor.visitor_organization;
-    final visitorId = widget.visitor.id;
+    // final visitorId = widget.visitor.id;
     super.initState();
   }
 
@@ -48,7 +48,7 @@ class EditVisitorFormState extends State<EditVisitorForm> {
     return Form(
       key: _formKey,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(60, 10, 60, 20),
+        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -495,7 +495,7 @@ class EditVisitorFormState extends State<EditVisitorForm> {
     //   visitorsList[visitorIndex] = widget.visitor;
     // }
 
-    final apiUrl = Uri.parse('http://localhost:3000/update_visitor');
+    final apiUrl = Uri.parse('http://20.55.109.32:80/update_visitor');
     final updatedVisitorFields = {
       'id': widget.visitor.id,
       'visitor_name': widget.visitor.visitor_name,

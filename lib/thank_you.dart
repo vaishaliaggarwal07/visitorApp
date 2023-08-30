@@ -55,14 +55,11 @@ class _ThankYouState extends State<ThankYou> {
                   // SizedBox(
                   //   height: 50,
                   // ),
-                  Padding(
-                padding: const EdgeInsets.fromLTRB(85, 20, 0, 0),
-                child: Image.asset(
-                  'assets/logo.png',
-                  fit: BoxFit.cover,
-                  // height: 500,
-                  width: 180,
-                ),
+                  Image.asset(
+                'assets/logo.png',
+                fit: BoxFit.cover,
+                // height: 500,
+                width: 200,
               ),
             ),
           ),
@@ -72,7 +69,7 @@ class _ThankYouState extends State<ThankYou> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(15, 90, 15, 15),
                   child: Image.asset(
-                    'thankyou.png',
+                    'assets/thankyou.png',
                     height: 200,
                   ),
                 ),
@@ -84,17 +81,17 @@ class _ThankYouState extends State<ThankYou> {
                       fontFamily: 'Roboto',
                       fontWeight: FontWeight.w500),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Text(
-                    'You are checking out at ',
-                    style: TextStyle(
-                        color: Color(0xFFFE4C2D),
-                        fontSize: 20,
-                        fontFamily: 'Roboto',
-                        fontWeight: FontWeight.w500),
-                  ),
-                ),
+                // Padding(
+                //   padding: const EdgeInsets.all(20.0),
+                //   child: Text(
+                //     'You are checking out at ',
+                //     style: TextStyle(
+                //         color: Color(0xFFFE4C2D),
+                //         fontSize: 20,
+                //         fontFamily: 'Roboto',
+                //         fontWeight: FontWeight.w500),
+                //   ),
+                // ),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(60, 10, 60, 0),
                   child: Row(
